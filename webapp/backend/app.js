@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
+var api = require('./routes/api');
 
 var app = express();
 
@@ -22,6 +23,19 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
+
+// API
+// POST /api/login
+// POST /api/logout
+// GET /api/user
+// GET /api/mood
+// GET /api/mood/company
+// GET /api/mood/team/:teamId
+// GET /api/mood/user/popularity
+// POST /api/user/mood
+// DELETE /api/user/mood/:moodEntryId
+// UPDATE /api/user/mood/:moodEntryId
+// GET /api/mood/report
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
