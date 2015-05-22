@@ -28,7 +28,7 @@ class MoodsController < ApplicationController
 
     respond_to do |format|
       if @mood.save
-        format.html { redirect_to @mood, notice: 'Mood was successfully created.' }
+        format.html { redirect_to moods_path, notice: 'Mood was successfully created.' }
         format.json { render :show, status: :created, location: @mood }
       else
         format.html { render :new }

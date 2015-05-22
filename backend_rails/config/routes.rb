@@ -3,7 +3,9 @@ Rails.application.routes.draw do
   get 'api/logout'
   get 'api/mood'
 
-  resources :moods, only: [:create, :destroy]
+  # TODO Remove the display actions. This is only for back end testing purposes
+  # Data will be fetched via JSON and consumed in an SPA
+  resources :moods
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
