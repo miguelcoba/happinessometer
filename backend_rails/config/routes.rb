@@ -1,11 +1,9 @@
 Rails.application.routes.draw do
   get 'api/login'
-
   get 'api/logout'
-
   get 'api/mood'
 
-  resources :moods
+  resources :moods, only: [:create, :destroy]
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
