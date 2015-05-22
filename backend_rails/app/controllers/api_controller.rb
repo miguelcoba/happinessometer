@@ -10,7 +10,6 @@ class ApiController < ApplicationController
     average = mood_sum.to_f / Mood.count
 
     respond_to do |format|
-      format.html { render json: {average_mood: average} }
       format.json { render json: {average_mood: average} }
     end
   end

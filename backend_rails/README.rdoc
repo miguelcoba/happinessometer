@@ -1,28 +1,17 @@
-== README
+== Happinessometer
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Para instalar el proyecto y correrlo:
 
-Things you may want to cover:
+1. Instalar RVM y Ruby:
+$ \curl -sSL https://get.rvm.io | bash -s stable --ruby
 
-* Ruby version
+Y hacer el source que dice en el output de la instalación
 
-* System dependencies
+2. Instalar Rails:
+$ gem install rails
 
-* Configuration
+Y esperar una eternidad
 
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
-
-
-Please feel free to use a different markup language if you do not plan to run
-<tt>rake doc:app</tt>.
+3. Instalar los gems:
+$ cd <project root>/backend_rails
+$ bundle install
