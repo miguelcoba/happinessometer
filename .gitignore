@@ -25,3 +25,15 @@ build/Release
 # Dependency directory
 # https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git
 webapp/backend/node_modules
+
+# Ignore bundler config.
+backend_rails/.bundle
+
+# Ignore the default SQLite database.
+backend_rails/db/*.sqlite3
+backend_rails/db/*.sqlite3-journal
+
+# Ignore all logfiles and tempfiles.
+backend_rails/log/*
+backend_rails!/log/.keep
+backend_rails/tmp
