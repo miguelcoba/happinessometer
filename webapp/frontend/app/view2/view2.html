@@ -1,8 +1,32 @@
-<p>This is the partial for view 2.</p>
-<p>
-  Showing of 'interpolate' filter:
-  {{ 'Current version is v%VERSION%.' | interpolate }}
-</p>
-<md-autocomplete md-selected-item="selectedItem" md-search-text="searchText" md-items="item in getMatches(searchText)" md-item-text="item.display">
-  <span md-highlight-text="searchText">item</span>
-</md-autocomplete>
+<div layout="row" layout-wrap layout-fill>
+	<div flex>
+		<md-card>
+		<img src="card-image.png" class="md-card-image" alt="image caption">
+		<md-card-content>
+		<h2>Card headline</h2>
+		<p>Card content</p>
+	</md-card-content>
+	<md-card-footer>
+	Card footer
+</md-card-footer>
+</md-card>
+</div>
+</div>
+<div layout="row" layout-align="center center" layout-fill >
+	<md-whiteframe class="md-whiteframe-z4" layout layout-align="center center" >
+
+	<div flex>
+		<span>This is where your use-case differs from npm’s Node-centric behaviour, so this is the only bit you should need to write yourself. Even then, we should have some handy modules that will help you out. You could do like Bower does, and download and install front-end packages into a totally different folder and handle dependencies separately. Or you could get npm to install everything into node_modules and use a post-install or a run-time hook to resolve dependencies, or some combination of those strategies. We’re not sure the best way to go, which is why we want to encourage experimentation here.</span>
+	</div>
+	<md-divider md-inset></md-divider>
+	<div flex>
+		<span>This is where your use-case differs from npm’s Node-centric behaviour, so this is the only bit you should need to write yourself. Even then, we should have some handy modules that will help you out. You could do like Bower does, and download and install front-end packages into a totally different folder and handle dependencies separately. Or you could get npm to install everything into node_modules and use a post-install or a run-time hook to resolve dependencies, or some combination of those strategies. We’re not sure the best way to go, which is why we want to encourage experimentation here</span>
+
+	</div>
+	<md-divider md-inset></md-divider>
+	<div flex>
+		<span>This is where your use-case differs from npm’s Node-centric behaviour, so this is the only bit you should need to write yourself. Even then, we should have some handy modules that will help you out. You could do like Bower does, and download and install front-end packages into a totally different folder and handle dependencies separately. Or you could get npm to install everything into node_modules and use a post-install or a run-time hook to resolve dependencies, or some combination of those strategies. We’re not sure the best way to go, which is why we want to encourage experimentation here.</span>
+
+	</div>
+</md-whiteframe>
+</div>
