@@ -1,10 +1,10 @@
 'use strict';
 
-describe('myApp.view2 module', function() {
+describe('happinessometer.allMood module', function() {
 
-  beforeEach(module('myApp.view2'));
+  beforeEach(module('happinessometer.allMood'));
 
-  describe('view2 controller', function(){
+  describe('allMood controller', function(){
 
     it('should ....', inject(function($controller) {
       //spec body
