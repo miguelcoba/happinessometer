@@ -4,9 +4,12 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var mongoose = require('mongoose');
 
-var routes = require('./routes/index');
-var api = require('./routes/api');
+var intexRoutes = require('./routes/index');
+var apiRoutes = require('./routes/api');
+
+mongoose.connect('mongodb://localhost/happinessometer'); // connect to our database
 
 var app = express();
 
@@ -22,20 +25,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', routes);
+app.use('/', intexRoutes);
 
-// API
-// POST /api/login
-// POST /api/logout
-// GET /api/user
-// GET /api/mood
-// GET /api/mood/company
-// GET /api/mood/team/:teamId
-// GET /api/mood/user/popularity
-// POST /api/user/mood
-// DELETE /api/user/mood/:moodEntryId
-// UPDATE /api/user/mood/:moodEntryId
-// GET /api/mood/report
+app.use('/api', apiRoutes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -67,6 +59,5 @@ app.use(function(err, req, res, next) {
         error: {}
     });
 });
-
 
 module.exports = app;
