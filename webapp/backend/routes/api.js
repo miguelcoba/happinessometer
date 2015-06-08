@@ -3,21 +3,6 @@ var Mood = require('../app/models/mood');
 
 var router = express.Router();
 
-// API
-// POST /api/login
-// POST /api/logout
-// GET /api/user
-
-// GET /api/mood
-// GET /api/mood/company
-// GET /api/mood/team/:teamId
-// GET /api/mood/user
-
-// POST /api/user/mood
-// DELETE /api/user/mood/:moodEntryId
-// UPDATE /api/user/mood/:moodEntryId
-// GET /api/mood/report
-
 router.route('/mood')
     .get(function(req, res) {
         res.json({});
