@@ -37,8 +37,8 @@ router.route('/auth/example')
         var example = new User({ 
             username: 'example', 
             password: 'password',
-            firstName: 'User',
-            lastName: 'Example'
+            name: { first:'User', last: 'Example' },
+            email: 'example@example.com'
         });
 
         example.save(function(err) {

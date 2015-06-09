@@ -33,7 +33,6 @@ router.route('/user/mood')
         var mood = new Mood();
         mood.description = req.body.description;
         mood.mood = req.body.mood;
-        mood.createdAt = new Date();
 
         mood.save(function(err) {
             if (err) {
