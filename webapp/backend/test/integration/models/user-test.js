@@ -1,10 +1,20 @@
 var assert = require('assert');
 var should = require('should');
 
-//var db = require('../../db')(); ??????
-var User = require('../../app/models/user');
+var User = require('../../../app/models/user');
 
 describe('User', function() {
+    var db;
+
+    before(function() {
+        //db = require('../../db');
+        //db.connect();
+    });
+
+    after(function() {
+        //db.disconnect();
+    });
+
     it('#username is required', function(done) {
         var user = new User({
         });

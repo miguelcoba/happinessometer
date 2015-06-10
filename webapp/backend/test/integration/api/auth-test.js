@@ -3,9 +3,9 @@ var http = require('http');
 var superagent = require('superagent');
 var should = require('should');
 
-var app = require('../../app');
+var app = require('../../../app');
 
-describe('/auth', function() {
+describe('/api', function() {
     var port = 3001,
         contextUrl = 'http://localhost:' + port,
         server;
@@ -26,12 +26,13 @@ describe('/auth', function() {
         console.log('before every test')
     });
 
-    it('GET should create example user', function() {
+    it('GET /auth/example should create example user', function(done) {
         superagent.get(contextUrl + '/api/auth/example').end(function(err, res) {
             should.not.exist(err);
             var result = JSON.parse(res.text);
             result.success.should.be.true;
             result.message.should.equal("Example user created!");
+            done();
         });
     });
 });

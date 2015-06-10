@@ -5,13 +5,16 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var db = require('./db')();
+var db = require('./db');
 var config = require('./config');
 var indexRoutes = require('./routes/index');
 var apiRouter = require('./routes/api');
 var auth = require('./routes/auth');
+var usersRoute = require('./routes/users');
 
 var app = express();
+
+db.connect();
 
 app.set('superSecret', config.secret); // secret variable
 
@@ -29,6 +32,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRoutes);
 app.use('/api', auth.router);
+app.use('/api', usersRoute);
 app.use(auth.verifyToken);
 app.use('/api', apiRouter);
 
