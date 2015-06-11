@@ -7,10 +7,10 @@ var bodyParser = require('body-parser');
 
 var db = require('./db');
 var config = require('./config');
-var indexRoutes = require('./routes/index');
+var indexRouter = require('./routes/index');
 var apiRouter = require('./routes/api');
 var auth = require('./routes/auth');
-var usersRoute = require('./routes/users');
+var usersRouter = require('./routes/users');
 
 var app = express();
 
@@ -30,10 +30,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRoutes);
+app.use('/', indexRouter);
 app.use('/api', auth.router);
-app.use('/api', usersRoute);
-app.use(auth.verifyToken);
+app.use('/api', usersRouter);
+app.use(auth.createVerifyTokenMiddleware());
 app.use('/api', apiRouter);
 
 // catch 404 and forward to error handler

@@ -32,13 +32,15 @@ router.route('/auth')
         });
     });
 
+// TODO delete this later
 router.route('/auth/example')
     .get(function(req, res) {
         var example = new User({ 
             username: 'example', 
             password: 'password',
             name: { first:'User', last: 'Example' },
-            email: 'example@example.com'
+            email: 'example@example.com',
+            createdBy: 'adminuser'
         });
 
         example.save(function(err) {
@@ -52,28 +54,30 @@ router.route('/auth/example')
 
 module.exports = {
     router: router,
-    verifyToken: function(req, res, next) {
-        // check header or url parameters or post parameters for token
-        var token = req.body.token || req.query.token || req.headers['x-access-token'];
-        // decode token
-        if (token) {
-            // verifies secret and checks exp
-            jwt.verify(token, req.app.get('superSecret'), function(err, decoded) {
-                if (err) {
-                    return res.json({ success: false, message: 'Failed to authenticate token.' });
-                } else {
-                    // if everything is good, save to request for use in other routes
-                    req.decoded = decoded;    
-                    next();
-                }
-            });
-        } else {
-            // if there is no token
-            // return an error
-            return res.status(403).send({ 
-                success: false, 
-                message: 'No token provided.' 
-            });
-        }
+    createVerifyTokenMiddleware: function() {
+        return function(req, res, next) {
+            // check header or url parameters or post parameters for token
+            var token = req.body.token || req.query.token || req.headers['x-access-token'];
+            // decode token
+            if (token) {
+                // verifies secret and checks exp
+                jwt.verify(token, req.app.get('superSecret'), function(err, decoded) {
+                    if (err) {
+                        return res.json({ success: false, message: 'Failed to authenticate token.' });
+                    } else {
+                        // if everything is good, save to request for use in other routes
+                        req.decoded = decoded;    
+                        next();
+                    }
+                });
+            } else {
+                // if there is no token
+                // return an error
+                return res.status(403).send({ 
+                    success: false, 
+                    message: 'No token provided.' 
+                });
+            }
+        };
     }
 };

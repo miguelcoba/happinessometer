@@ -3,7 +3,15 @@ var config = require('./config');
 
 module.exports = {
     connect: function () {
-        mongoose.connect(config.database); // connect to our database
+        // Note: the default size of the pool is 5
+        var options = {
+            db: { native_parser: true },
+            server: {
+                poolSize: 5,
+                socketOptions: { keepAlive: 1 }
+            }
+        }
+        mongoose.connect(config.database, options); // connect to our database
     },
     disconnect: function() {
         mongoose.disconnect();

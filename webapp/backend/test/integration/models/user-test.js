@@ -48,14 +48,15 @@ describe('User', function() {
         });
     });
 
-    it('#save() should create a new User', function(done) {
+    it('#save() should create a new disabled User', function(done) {
         var user = new User({
             username: 'rgutierrez',
             password: 'secret',
             email: 'rgutierrez@email.com',
             name: {
                 first: 'Rafael', last: 'Gutierrez'
-            }
+            },
+            createdBy: 'rmartinez'
         });
 
         user.save(function(err, newUser) {
@@ -67,6 +68,7 @@ describe('User', function() {
             newUser.name.last.should.be.equal(user.name.last);
             should.exist(newUser.id);
             should.exist(newUser.createdAt);
+            newUser.enabled.should.be.false;
             done();
         });
     });
