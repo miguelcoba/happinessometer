@@ -1,4 +1,7 @@
-var User = require('../models/user');
+var moment = require('moment');
+
+var PendingUser = require('../models/pendingUser');
+var Company = require('../models/company');
 
 UserService = function() {
 };
@@ -9,30 +12,63 @@ UserService = function() {
  * @param {newUser}
  * @param {adminUser}
  */
-UserService.prototype.createNewUser = function(newUserConfig, adminUsername) {
-    this._validateUsername(adminUsername, function(err, adminUser) {
+UserService.prototype.requestNewUser = function(newUserConfig, callback) {
+    var self = this,
+        newPendingUser,
+        emailDomain;
+
+    if (!newUserConfig) {
+        return callback({
+            message: 'New user configuration not provided.'
+        });
+    }
+
+    if (newUserConfig && !newUserConfig.email) {
+        return callback({
+            message: 'New user email is required.'
+        });
+    }
+
+    emailDomain = newUserConfig.email.substring(newUserConfig.email.indexOf('@'));
+    console.log('domain: ' + emailDomain);
+    Company.findOne({ domain: emailDomain }, function(err, company) {
+        console.log('Company: ' + company);
         if (err) {
-            console.log('error');
+            return callback({
+                message: 'Error trying to find the domain ' + emailDomain + '.',
+                cause: err
+            });
         }
 
-        var newUser = new User({
-            username: newUserConfig.username,
-            password: newUserConfig.password,
+        if (!company) {
+            return callback({
+                message: 'There is no domain registered for ' + emailDomain + '.'
+            });
+        }
+
+        newPendingUser = new PendingUser({
             name: { first: newUserConfig.firstName, last: newUserConfig.lastName },
             email: newUserConfig.email,
-            createdBy: adminUser.username,
-            enabled: true
+            validUntil: moment().add(3, 'days'),
+            code: self._generateValidationCode()
         });
 
-        // TODO save user, generate UUID to handle registration by the created user
+        newPendingUser.save(function(err, createdPendingUser) {
+            if (err) {
+                return callback({
+                    message: 'Error creating the new user request.',
+                    cause: err
+                });
+            }
+            //DomainEvents.fire('newUserRequested', createdPendingUser);
+            callback(err, createdPendingUser);
+        });
     });
 };
 
-UserService.prototype._validateUsername = function(username, callback) {
-    var query = User.findOne({ 'username': username });
-    query.select('username');
-    query.exec(callback):
-}:
+UserService.prototype._generateValidationCode = function() {
+    return moment().millisecond();
+}
 
 module.exports = function() {
     return new UserService();
