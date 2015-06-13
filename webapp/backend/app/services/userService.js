@@ -1,4 +1,6 @@
 var moment = require('moment');
+var bcrypt = require('bcrypt');
+var randomstring = require('randomstring');
 
 var PendingUser = require('../models/pendingUser');
 var Company = require('../models/company');
@@ -66,10 +68,14 @@ UserService.prototype.requestNewUser = function(newUserConfig, callback) {
     });
 };
 
+UserService.prototype.validateUser = function(code, callback) {
+    // TODO rgutierrez
+};
+
 UserService.prototype._generateValidationCode = function() {
-    return moment().millisecond();
-}
+    return randomstring.generate(35);
+};
 
 module.exports = function() {
     return new UserService();
-}
+};

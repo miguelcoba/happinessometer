@@ -20,5 +20,5 @@ module.exports = mongoose.model('PendingUser', new Schema({
         default: Date.now
     },
     validUntil: { type: Date, required: true},
-    code: { type: String, required: true }
+    code: { type: String, required: true, unique : true }
 }));
