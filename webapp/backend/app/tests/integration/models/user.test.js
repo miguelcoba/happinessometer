@@ -1,7 +1,7 @@
 var assert = require('assert');
 var should = require('should');
 
-var User = require('../../../app/models/user');
+var User = require('../../../models/user');
 
 describe('User', function() {
     var db;

@@ -1,7 +1,7 @@
 var assert = require('assert');
 var should = require('should');
 
-var Mood = require('../../../app/models/mood');
+var Mood = require('../../../models/mood');
 
 describe('Mood', function() {
     var db;

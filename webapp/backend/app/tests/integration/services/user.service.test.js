@@ -1,8 +1,8 @@
 var assert = require('assert');
 var should = require('should');
 
-var userService = require('../../../app/services/userService')();
-var companyService = require('../../../app/services/companyService')();
+var userService = require('../../../services/user.service')();
+var companyService = require('../../../services/company.service')();
 
 describe('UserService', function() {
     describe('#requestNewUser', function() {

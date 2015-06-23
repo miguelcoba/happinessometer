@@ -3,11 +3,6 @@ var Mood = require('../app/models/mood');
 
 var router = express.Router();
 
-router.route('/mood')
-    .get(function(req, res) {
-        res.json({});
-    });
-
 router.route('/company')
     .get(function(req, res) {
         res.json({});

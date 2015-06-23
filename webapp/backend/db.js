@@ -11,7 +11,7 @@ module.exports = {
                 socketOptions: { keepAlive: 1 }
             }
         }
-        mongoose.connect(config.database, options); // connect to our database
+        mongoose.connect(config.database, options);
     },
     disconnect: function() {
         mongoose.disconnect();

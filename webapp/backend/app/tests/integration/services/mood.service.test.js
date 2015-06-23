@@ -2,7 +2,7 @@ var assert = require('assert');
 var should = require('should');
 
 describe('MoodService', function() {
-    var moodService = require('../../../app/services/moodService')();
+    var moodService = require('../../../services/mood.service')();
     
     describe('#setMood', function() {
         it('without mood config should fail', function(done) {

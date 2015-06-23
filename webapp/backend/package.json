@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node ./bin/www",
     "test": "mocha --require should --reporter dot --ui bdd test/unit/**/*-test.js",
-    "test-integration": "mocha --require should --reporter dot --ui bdd test/integration/**/*-test.js"
+    "test-integration": "mocha --require should --reporter dot --ui bdd app/tests/integration/**/*.test.js"
   },
   "dependencies": {
     "bcrypt": "^0.8.3",
