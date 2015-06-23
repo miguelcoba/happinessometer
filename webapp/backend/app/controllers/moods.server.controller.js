@@ -6,8 +6,9 @@ exports.addMood = function(req, res) {
     moodService.setMood({
         mood: req.body.mood,
         comment: req.body.comment
-    })
-    res.json({});
+    }, function(err, mood) {
+        res.json({}); // TODO
+    });
 };
 
 exports.getMoods = function(req, res) {

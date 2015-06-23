@@ -6,5 +6,4 @@ var moods = require('../controllers/moods.server.controller');
 var router = express.Router();
 
 router.route('/moods')
-    .get(moods.getMoods)
-    .post(moods.addMood);
+    .post(/* TODO authentication, */moods.addMood);
