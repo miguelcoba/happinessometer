@@ -41,3 +41,4 @@ backend_rails/tmp
 *.iml
 .idea
 .vagrant
+node_modules
