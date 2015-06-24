@@ -37,3 +37,7 @@ backend_rails/db/*.sqlite3-journal
 backend_rails/log/*
 backend_rails!/log/.keep
 backend_rails/tmp
+
+*.iml
+.idea
+.vagrant
