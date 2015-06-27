@@ -1,18 +1,28 @@
-var assert = require('assert');
-var should = require('should');
+'use strict';
 
-var User = require('../../../app/models/user');
+var assert = require('assert'),
+    should = require('should'),
+    mongoose = require('mongoose'),
+    chalk = require('chalk'),
+    config = require('../../../config/config'),
+    User = require('../../models/user');
 
 describe('User', function() {
     var db;
 
     before(function() {
-        //db = require('../../db');
-        //db.connect();
+        db = mongoose.connect(config.db.uri, config.db.options, function(err) {
+            if (err) {
+                console.error(chalk.red('Could not connect to MongoDB!'));
+                console.log(chalk.red(err));
+            }
+        });
     });
 
     after(function() {
-        //db.disconnect();
+        if (db) {
+            db.disconnect();
+        }
     });
 
     it('#username is required', function(done) {
