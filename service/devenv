@@ -1,2 +1,1 @@
-export HAPPINESSOMETER_MONGODB_CONNECTION_STRING="mongodb://localhost/happinessometer"
-export HAPPINESSOMETER_SECRET_KEY="{;|XQu]]o!>bq6B>KGHW?wl7#KJ,i%(DB'l]'yrZB=:|3g}?:2S%BqfnF6b"
+export NODE_ENV="development"
