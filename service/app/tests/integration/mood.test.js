@@ -4,6 +4,7 @@ var assert = require('assert'),
     should = require('should'),
     mongoose = require('mongoose'),
     chalk = require('chalk'),
+    moment = require('moment'),
     config = require('../../../config/config'),
     Mood = require('../../models/mood');
 
@@ -36,6 +37,8 @@ describe('Mood', function() {
             newMood.mood.should.be.equal(mood.mood);
             newMood.comment.should.be.equal(mood.comment);
             should.exist(newMood.createdAt);
+            console.log(chalk.green(newMood.createdAt));
+            console.log(chalk.blue(moment().utc()));
             done();
         });
     });
