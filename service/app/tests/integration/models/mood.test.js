@@ -5,18 +5,22 @@ var assert = require('assert'),
     mongoose = require('mongoose'),
     chalk = require('chalk'),
     moment = require('moment'),
-    config = require('../../../config/config'),
-    Mood = require('../../models/mood');
+    config = require('../../../../config/config'),
+    Mood = require('../../../models/mood');
 
 describe('Mood', function() {
     var db;
 
-    before(function() {
+    before(function(done) {
         db = mongoose.connect(config.db.uri, config.db.options, function(err) {
             if (err) {
                 console.error(chalk.red('Could not connect to MongoDB!'));
                 console.log(chalk.red(err));
             }
+        });
+
+        Mood.remove({}, function(err) {
+            done();
         });
     });
 

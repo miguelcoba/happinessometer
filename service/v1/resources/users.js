@@ -1,15 +1,21 @@
 'use strict';
-var base = require('../lib/base');
+
+var base = require('../lib/base'),
+    userService = require('../../app/services/user.service')();
 
 module.exports = base.Resource.extend({
-	get: function(request, response) {
-		return response.json([
-			'César Ricardez',
-			'Gerardo Galindez',
-			'Manuel Zavaleta',
-			'Rafael Gutierrez',
-			'Raúl Vázquez',
-			'Omar Martín'
-		]);
+	methods: ['put', 'post'],
+
+	post: function(req, res) {
+		var self = this;
+
+		userService.requestNewUser({
+			email: req.body.email
+		}, function(err, newPendingUser) {
+			if (err) {
+				return self.dispatchInternalServerError(err);
+			}
+			return res.json(newPendingUser);
+		});
 	}
 });

@@ -1,6 +1,7 @@
 'use strict';
 
 var mongoose = require('mongoose'),
+    moment = require('moment'),
     Schema = mongoose.Schema;
 
 module.exports = mongoose.model('Company', new Schema({
@@ -17,6 +18,6 @@ module.exports = mongoose.model('Company', new Schema({
     // TODO createdAt should be UTC
     createdAt: {
         type: Date,
-        default: Date.now
+        default: moment().utc()
     }
 }));

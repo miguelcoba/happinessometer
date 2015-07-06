@@ -32,7 +32,7 @@ mongoose.connection.on('error', function(err) {
 
 // api v1 router mounting
 var api_v1 = require('./v1');
-app.use('/v1/', api_v1);
+app.use('/api/v1/', api_v1);
 
 // catch 404 and forward to error handler
 app.use(function(request, response, continuation) {

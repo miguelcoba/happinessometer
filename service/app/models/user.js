@@ -1,16 +1,20 @@
 'use strict';
 
 var mongoose = require('mongoose'),
-    Schema = mongoose.Schema;
+    moment = require('moment'),
+    crypto = require('crypto'),
+    Schema = mongoose.Schema,
+    userSchema;
 
-// TODO roles by user
-module.exports = mongoose.model('User', new Schema({ 
+userSchema = new Schema({ 
     username: {
         type: String,
         required: true,
         unique : true
     },
-    // TODO hashing the password
+    salt: {
+        type: String
+    },
     password: {
         type: String,
         required: true
@@ -39,6 +43,30 @@ module.exports = mongoose.model('User', new Schema({
     // TODO createdAt should be UTC
     createdAt: {
         type: Date,
-        default: Date.now
+        default: moment().utc()
     }
-}));
+});
+
+userSchema.pre('save', function(next) {
+    if (this.password) {
+        this.salt = crypto.randomBytes(16).toString('base64');
+        this.password = this.hashPassword(this.password);
+    }
+
+    next();
+});
+
+userSchema.methods.hashPassword = function(password) {
+    if (this.salt && password) {
+        return crypto.pbkdf2Sync(password, new Buffer(this.salt, 'base64'), 10000, 64).toString('base64');
+    } else {
+        return password;
+    }
+};
+
+userSchema.methods.authenticate = function(password) {
+    return this.password === this.hashPassword(password);
+};
+
+// TODO roles by user
+module.exports = mongoose.model('User', userSchema);

@@ -19,7 +19,7 @@ _.each(modules_to_mount.sort().reverse(), function(module_name) {
 	/* get the class module of the module to mount */
 	var resource_class = require(process.cwd() + '/v1/resources/' + module_name);
 	/* map the resource according to simple rules */
-	var path = '/:team';
+	var path = '';
 
 	_.each(module_name.split('.'), function(fragment) {
 		if(fragment.charAt(0) === '_' && fragment.charAt(fragment.length - 1) === '_') {
@@ -37,7 +37,7 @@ _.each(modules_to_mount.sort().reverse(), function(module_name) {
 	path += '/:id?';
 
 	router.all(path, function(request, response, continuation) {
-		var resource_instance = new resource_class(request, response);
+		var resource_instance = new resource_class(request, response, continuation);
 		resource_instance.dispatch();
 	});
 

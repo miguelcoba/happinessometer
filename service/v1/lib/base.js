@@ -1,35 +1,47 @@
 'use strict';
-var _ = require('lodash');
-var extend = require('bextend');
+
+var _ = require('lodash'),
+    extend = require('bextend');
+
+function returnMessage(error) {
+	if (error) {
+		if (typeof error === 'string') {
+			return error;
+		} else {
+			return error.message;
+		}
+	}
+	return '';
+}
 
 var errors = {
-	BadRequestError: function(message) {
-		this.message = message;
+	BadRequestError: function(error) {
+		this.message = returnMessage(error);
 		this.status = 400;
 	},
 
-	NotFoundError: function(message) {
-		this.message = message;
+	NotFoundError: function(error) {
+		this.message = returnMessage(error);
 		this.status = 404;
 	},
 
-	ConflictError: function(message) {
-		this.message = message;
+	ConflictError: function(error) {
+		this.message = returnMessage(error);
 		this.status = 409;
 	},
 
-	InternalError: function(message) {
-		this.message = message;
+	InternalError: function(error) {
+		this.message = returnMessage(error);
 		this.status = 500;
 	},
 
-	UnauthorizedError: function(message) {
-		this.message = message;
+	UnauthorizedError: function(error) {
+		this.message = returnMessage(error);
 		this.status = 401;
 	},
 
-	NotAllowedError: function(message) {
-		this.message = message;
+	NotAllowedError: function(error) {
+		this.message = returnMessage(error);
 		this.status = 405;
 	}
 };
@@ -80,6 +92,19 @@ _.extend(Resource.prototype, {
 		this.response.status(error.status || 500).send(error.message ? {
 			message: error.message
 		} : null);
+	},
+
+	dispatchInternalServerError: function(error) {
+		this.dispatchError(new errors.InternalError(error));
+	},
+
+	dispatchNotFoundError: function(error) {
+		this.dispatchError(new errors.NotFoundError(error));
+	},
+
+	dispatchSuccessfulResourceCreation: function(resourceIdentifier) {
+		this.response.setHeader('Location', 'http://algo/' + resourceIdentifier);
+        this.response.status(201).send(null);
 	}
 });
 

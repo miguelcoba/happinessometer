@@ -1,6 +1,11 @@
 'use strict';
 
 module.exports = {
+    app: {
+        pendingUser: {
+            validUntilDays: 1
+        }
+    },
     db: {
         uri: 'mongodb://localhost/happinessometer-dev',
         options: {
@@ -22,8 +27,5 @@ module.exports = {
         options: {
             //stream: 'access.log'
         }
-    },
-    app: {
-        title: 'Happinessometer - Service'
     }
 };

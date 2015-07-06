@@ -2,9 +2,12 @@
 
 module.exports = {
     app: {
-        title: 'Happinessometer',
+        title: 'Happinessometer - Service',
         description: 'Happinessometer Service',
-        keywords: 'happinessometer, service'
+        keywords: 'happinessometer, service',
+        pendingUser: {
+            validUntilDays: 3
+        }
     },
     port: process.env.PORT || 3000,
     sessionName: 'connect.sid',
