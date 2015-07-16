@@ -1,53 +1,42 @@
 'use strict';
+var _ = require('lodash');
+var extend = require('bextend');
 
-var _ = require('lodash'),
-    extend = require('bextend');
-
-function returnMessage(error) {
-	if (error) {
-		if (typeof error === 'string') {
-			return error;
-		} else {
-			return error.message;
-		}
-	}
-	return '';
-}
 
 var errors = {
-	BadRequestError: function(error) {
-		this.message = returnMessage(error);
+	BadRequestError: function(message) {
+		this.message = message;
 		this.status = 400;
 	},
 
-	NotFoundError: function(error) {
-		this.message = returnMessage(error);
+	NotFoundError: function(message) {
+		this.message = message;
 		this.status = 404;
 	},
 
-	ConflictError: function(error) {
-		this.message = returnMessage(error);
+	ConflictError: function(message) {
+		this.message = message;
 		this.status = 409;
 	},
 
-	InternalError: function(error) {
-		this.message = returnMessage(error);
+	InternalError: function(message) {
+		this.message = message;
 		this.status = 500;
 	},
 
-	UnauthorizedError: function(error) {
-		this.message = returnMessage(error);
+	UnauthorizedError: function(message) {
+		this.message = message;
 		this.status = 401;
 	},
 
-	NotAllowedError: function(error) {
-		this.message = returnMessage(error);
+	NotAllowedError: function(message) {
+		this.message = message;
 		this.status = 405;
 	}
 };
 
-_.each(errors, function(error) {
-	error.prototype = new Error();
+_.each(_.keys(errors), function(key) {
+	errors[key].prototype = new Error();
 });
 
 var Resource = function(request, response, continuation) {
@@ -94,6 +83,10 @@ _.extend(Resource.prototype, {
 		} : null);
 	},
 
+	abort: function(error) {
+		this.dispatchError(error);
+	},
+
 	dispatchInternalServerError: function(error) {
 		this.dispatchError(new errors.InternalError(error));
 	},
@@ -104,9 +97,10 @@ _.extend(Resource.prototype, {
 
 	dispatchSuccessfulResourceCreation: function(resourceIdentifier) {
 		this.response.setHeader('Location', 'http://algo/' + resourceIdentifier);
-        this.response.status(201).send(null);
+		this.response.status(201).send(null);
 	}
 });
+
 
 // assigning the extend function to every resource class in the base library
 Resource.extend = extend;

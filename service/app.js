@@ -27,12 +27,11 @@ var db = mongoose.connect(config.db.uri, config.db.options, function(err) {
 mongoose.connection.on('error', function(err) {
 	console.error(chalk.red('MongoDB connection error: ' + err));
 	process.exit(-1);
-	}
-);
+});
 
 // api v1 router mounting
 var api_v1 = require('./v1');
-app.use('/api/v1/', api_v1);
+app.use('/v1/', api_v1);
 
 // catch 404 and forward to error handler
 app.use(function(request, response, continuation) {

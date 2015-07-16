@@ -1,10 +1,9 @@
 'use strict';
 
-var _ = require('lodash'),
-    fs = require('fs'),
-    express = require('express'),
-    chalk = require('chalk'),
-    modules_to_mount = [];
+var _ = require('lodash');
+var fs = require('fs');
+var express = require('express');
+var modules_to_mount = [];
 
 _.each(fs.readdirSync(process.cwd() + '/v1/resources'), function(file) {
 	if(_.last(file.split('.')) === 'js') {
@@ -41,7 +40,7 @@ _.each(modules_to_mount.sort().reverse(), function(module_name) {
 		resource_instance.dispatch();
 	});
 
-	console.log(chalk.blue('v1%s resource mounted', path));
+	console.log('v1%s resource mounted', path);
 });
 
 module.exports = router;

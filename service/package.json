@@ -6,7 +6,7 @@
 		"start": "node ./bin/www",
 		"dev": ". ./devenv; forever -w ./bin/www",
 		"test": "mocha --require should --reporter dot --ui bdd app/tests/unit/**/*.test.js",
-        "test-integration": ". ./testenv; mocha --require should --reporter dot --ui bdd app/tests/integration/**/*.test.js"
+		"test-integration": ". ./testenv; mocha --require should --reporter dot --ui bdd app/tests/integration/**/*.test.js"
 	},
 	"dependencies": {
 		"body-parser": "~1.12.4",
@@ -20,13 +20,16 @@
 		"chalk": "~1.0.0",
 		"glob": "~4.0.5",
 		"moment": "^2.10.3",
-		"randomstring": "^1.0.6"
+		"randomstring": "^1.0.6",
+		"bcrypt": "~0.8.3",
+		"validate.js": "~0.8.0",
+		"mandrill-api": "~1.0.45"
 	},
 	"devDependencies": {
 		"forever": "0.14.1",
 		"mocha": "^2.2.5",
-    	"should": "^6.0.3",
-        "superagent": "^1.2.0"
+		"should": "^6.0.3",
+		"superagent": "^1.2.0"
 	},
 	"engines": {
 		"node": "0.10.x"
