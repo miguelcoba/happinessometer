@@ -1,21 +1,70 @@
 'use strict';
+var _ = require('lodash');
+var validate = require('validate.js');
+var base = require('../lib/base');
+var User = require('../models/User');
+var Email = require('../services/email');
 
-var base = require('../lib/base'),
-    userService = require('../../app/services/user.service')();
 
 module.exports = base.Resource.extend({
-	methods: ['put', 'post'],
+	get: function() {
+		var projection = {
+			email: true,
+			name: true,
+			confirmed: true
+		};
 
-	post: function(req, res) {
-		var self = this;
+		var that = this;
 
-		userService.requestNewUser({
-			email: req.body.email
-		}, function(err, newPendingUser) {
-			if (err) {
-				return self.dispatchInternalServerError(err);
+		User.find({}, projection, function(error, users) {
+			if(error) return that.dispatchError(error);
+			return that.response.json(users);
+		});
+	},
+
+	post: function() {
+		var payload = this.request.body;
+
+		var errors = validate(payload, {
+			email: {
+				presence: true,
+				email: true
+			},
+			password: {
+				presence: true,
+				length: { minimum: 4 }
+			},
+			name: {
+				presence:  true,
+				length: { minimum: 2 }
 			}
-			return res.json(newPendingUser);
+		});
+
+		if(errors) {
+			return this.dispatchError(
+				new base.errors.BadRequestError(errors)
+			);
+		}
+
+		var user = new User(payload);
+		var that = this;
+
+		user.hashPassword(function(error) {
+			if(error) return that.dispatchError(error);
+
+			user.save(function(error, user) {
+				if(error) return that.dispatchError(error);
+
+				var email = new Email();
+
+				email.sendConfirmationMessage(user, function(error) {
+					if(error) return that.dispatchError(error);
+
+					return that.response.location(
+						'/users/' + user.id
+					).status(201).send(null);
+				});
+			});
 		});
 	}
 });
