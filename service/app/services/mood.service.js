@@ -65,6 +65,72 @@ MoodService.prototype.quantityReport = function(callback) {
     });
 }
 
+MoodService.prototype.hashtagReport = function(callback) {
+    this.findAll(function(err, moods) {
+        if (err) {
+            return callback({
+                message: err.message
+            });
+        }
+
+        callback(null, {
+            hashtags: [{
+                hashtag: '#yolo',
+                quantity: 1000,
+                moods: [{
+                    mood: 'happy',
+                    quantity: 500
+                },{
+                    mood: 'sad',
+                    quantity: 300
+                },{
+                    mood: 'normal',
+                    quantity: 200
+                }]
+            },{
+                hashtag: '#freedomhackday',
+                quantity: 500,
+                moods: [{
+                    mood: 'happy',
+                    quantity: 300
+                },{
+                    mood: 'sad',
+                    quantity: 100
+                },{
+                    mood: 'normal',
+                    quantity: 100
+                }]
+            },{
+                hashtag: '#java',
+                quantity: 1340,
+                moods: [{
+                    mood: 'happy',
+                    quantity: 340
+                },{
+                    mood: 'sad',
+                    quantity: 500
+                },{
+                    mood: 'normal',
+                    quantity: 500
+                }]
+            },{
+                hashtag: '#java',
+                quantity: 1340,
+                moods: [{
+                    mood: 'happy',
+                    quantity: 340
+                },{
+                    mood: 'sad',
+                    quantity: 500
+                },{
+                    mood: 'normal',
+                    quantity: 500
+                }]
+            }]
+        });
+    });
+}
+
 module.exports = function() {
     return new MoodService();
 };
