@@ -51,7 +51,16 @@ MoodService.prototype.report = function(callback) {
         }
 
         callback(null, {
-            company: [0.5, 0.3, 0.2]
+            company: [{
+                mood: 'happy',
+                ratio: 0.5
+            },{
+                mood: 'normal',
+                ratio: 0.2
+            },{
+                mood: 'sad',
+                ratio: 0.5
+            }]
         });
     });
 }
