@@ -1,8 +1,8 @@
 'use strict';
 var _ = require('lodash'),
-    extend = require('bextend'),
-    config = require('../../config/config'),
-    jwt = require('jsonwebtoken');
+	extend = require('bextend'),
+	config = require('../../config/config'),
+	jwt = require('jsonwebtoken');
 
 
 var errors = {
@@ -94,24 +94,40 @@ _.extend(Resource.prototype, {
 		var self = this;
 
 		// check header or url parameters or post parameters for token
-  		var token = self.request.body.token || self.request.query.token || self.request.headers['x-access-token'];
-  		// decode token
-  		if (token) {
+		var token =
+			self.request.body.token ||
+			self.request.query.token ||
+			self.request.headers['x-access-token'];
+
+		if(!token) {
+			var authorization = this.request.get('Authorization');
+			if(authorization) {
+				authorization = authorization.split(' ');
+				var scheme = authorization[0];
+				if(scheme != 'Token') {
+					this.dispatchError(new errors.BadRequestError());
+				}
+				token = authorization[1];
+			}
+		}
+
+		// decode token
+		if (token) {
 			// verifies secret and checks exp
-	    	jwt.verify(token, config.secretKey, function(err, decoded) {      
-		    	if (err) {
-		        	return self.dispatchUnauthorizedError('Failed to authenticate token.');    
-		      	} else {
-		        	// if everything is good, save to request for use in other routes
-		        	self.request.decoded = decoded;    
-		        	next();
-		      	}
-	    	});
+			jwt.verify(token, config.secretKey, function(err, decoded) {
+				if (err) {
+					return self.dispatchUnauthorizedError('Failed to authenticate token.');
+				} else {
+				// if everything is good, save to request for use in other routes
+					self.request.decoded = decoded;
+					next();
+				}
+			});
 		} else {
-		    // if there is no token
-		    // return an error
-		    return self.dispatchBadRequestError('No token provided.');
-  		}
+			// if there is no token
+			// return an error
+			return self.dispatchBadRequestError('No token provided.');
+		}
 	},
 
 	dispatchError: function(error) {
