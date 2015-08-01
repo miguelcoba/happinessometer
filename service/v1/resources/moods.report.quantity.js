@@ -11,7 +11,7 @@ module.exports = base.Resource.extend({
 
         console.log(self.request.decoded);
 
-        moodService.findAll(function(err, moods) {
+        moodService.quantityReport(function(err, moods) {
             if (err) {
                 return self.dispathError(err);
             }

@@ -42,7 +42,7 @@ MoodService.prototype.findAll = function(callback) {
     });
 };
 
-MoodService.prototype.report = function(callback) {
+MoodService.prototype.quantityReport = function(callback) {
     this.findAll(function(err, moods) {
         if (err) {
             return callback({
@@ -53,13 +53,13 @@ MoodService.prototype.report = function(callback) {
         callback(null, {
             company: [{
                 mood: 'happy',
-                ratio: 0.5
+                quantity: 1000
             },{
                 mood: 'normal',
-                ratio: 0.2
+                quantity: 500
             },{
                 mood: 'sad',
-                ratio: 0.5
+                quantity: 1340
             }]
         });
     });
