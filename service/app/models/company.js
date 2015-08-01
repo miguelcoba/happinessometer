@@ -20,4 +20,14 @@ module.exports = mongoose.model('Company', new Schema({
         type: Date,
         default: moment().utc()
     }
+}, {
+    toJSON: {
+        transform: function(doc, ret) {
+            ret.id = doc._id;
+            delete ret._id;
+            delete ret.__v;
+            delete ret.createdAt;
+            return ret;
+        }
+    }
 }));

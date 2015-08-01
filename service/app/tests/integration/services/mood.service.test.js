@@ -10,7 +10,7 @@ describe('MoodService', function() {
         it('without mood config should fail', function(done) {
             moodService.setMood(null, function(err) {
                 should.exist(err);
-                err.message.should.be.equal('No mood config provided.');
+                err.message.should.be.equal('No mood values provided.');
                 done();
             });
         });

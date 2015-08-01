@@ -6,10 +6,10 @@ var base = require('../lib/base'),
 module.exports = base.Resource.extend({
     methods: ['get'],
 
-    get: function(req, res) {
+    get: function() {
         var self = this;
         
-        companyService.findWithDomain(req.params.domain, function(err, company) {
+        companyService.findWithDomain(self.request.params.domain, function(err, company) {
             if (err) {
                 return self.dispatchInternalServerError(err);
             }
@@ -18,10 +18,7 @@ module.exports = base.Resource.extend({
                 return self.dispatchNotFoundError('No Company with domain ' + req.params.domain);
             }
 
-            return res.json({
-                name: company.name,
-                domain: company.domain
-            });
+            return self.response.json(company.toJSON());
         });
     }
 });

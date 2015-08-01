@@ -1,15 +1,18 @@
 'use strict';
 
-var _ = require('lodash');
-var fs = require('fs');
-var express = require('express');
-var modules_to_mount = [];
+var _ = require('lodash'),
+    fs = require('fs'),
+    express = require('express'),
+    modules_to_mount = [],
+    resourcesToIgnore = ['_users.js'];
 
 _.each(fs.readdirSync(process.cwd() + '/v1/resources'), function(file) {
-	if(_.last(file.split('.')) === 'js') {
-		var module_name = _.initial(file.split('.')).join('.');
-		modules_to_mount.push(module_name);
-	}
+    if (resourcesToIgnore.indexOf(file) >= 0) return;
+
+    if (_.last(file.split('.')) === 'js') {
+        var module_name = _.initial(file.split('.')).join('.');
+        modules_to_mount.push(module_name);
+    }
 });
 
 var router = express.Router();

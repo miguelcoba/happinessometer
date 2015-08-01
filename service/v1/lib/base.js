@@ -79,7 +79,8 @@ _.extend(Resource.prototype, {
 
 	dispatchError: function(error) {
 		this.response.status(error.status || 500).send(error.message ? {
-			message: error.message
+			message: error.message,
+			cause: error.cause && error.cause.message ? error.cause.message : ""
 		} : null);
 	},
 
@@ -98,6 +99,14 @@ _.extend(Resource.prototype, {
 	dispatchSuccessfulResourceCreation: function(resourceIdentifier) {
 		this.response.setHeader('Location', 'http://algo/' + resourceIdentifier);
 		this.response.status(201).send(null);
+	},
+
+	dispatchBadRequestError: function(error) {
+		this.dispatchError(new errors.BadRequestError(error));
+	},
+
+	dispatchConflictError: function(error) {
+		this.dispatchError(new errors.ConflictError(error));
 	}
 });
 

@@ -21,4 +21,12 @@ module.exports = mongoose.model('Mood',  new Schema({
         type: Date,
         default: moment().utc()
     }
+}, {
+    toJSON: {
+        transform: function(doc, ret) {
+            ret.id = doc._id;
+            delete ret._id;
+            return ret;
+        }
+    }
 }));

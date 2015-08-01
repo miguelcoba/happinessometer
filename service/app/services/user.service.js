@@ -4,9 +4,11 @@ var moment = require('moment'),
     chalk = require('chalk'),
     PendingUser = require('../models/pendingUser'),
     Company = require('../models/company'),
-    User = require('../models/user');
+    User = require('../models/user'),
+    emailService = require('../services/email.service');
 
-var UserService = function() {
+var UserService = function(emailService) {
+    this._emailService = emailService;
 };
 
 /**
@@ -51,15 +53,23 @@ UserService.prototype.requestNewUser = function(newUserConfig, callback) {
             email: newUserConfig.email,
         });
 
-        newPendingUser.save(function(err, createdPendingUser) {
+        newPendingUser.save(function(err, pendingUser) {
             if (err) {
                 return callback({
                     message: 'Error creating the new user request.',
                     cause: err
                 });
             }
-            //DomainEvents.fire('newUserRequested', createdPendingUser);
-            callback(err, createdPendingUser);
+            // TODO rgutierrez send email as a domain event
+            self._emailService.sendConfirmationMessage(pendingUser, function(err) {
+                if (err) {
+                    return callback({
+                        message: 'Error sending the confirmation email.',
+                        cause: err
+                    })
+                }
+                callback(err, pendingUser);
+            });
         });
     });
 };
@@ -113,21 +123,30 @@ UserService.prototype.createUserUsingCode = function(code, userConfig, callback)
                 });
             }
 
-            callback(err, userSaved);
+            self._emailService.sendWelcomeMessage(userSaved.email, function(err) {
+                if (err) {
+                    return callback({
+                        message: 'Error sending the welcome email.',
+                        cause: err
+                    })
+                }
+                callback(err, userSaved);
+            });
         });
     });
 };
 
 UserService.prototype.findPendingUserOrUserByEmail = function(email, callback) {
-    PendingUser.findOne({ email: email }, function(err, pendingUser) {
+    User.findOne({ email: email }, function(err, user) {
         // TODO handling error
-        if (pendingUser) {
-            pendingUser.status = 'pending';
-            return callback(err, pendingUser);
+
+        if (user) {
+            user.status = 'user';
+            return callback(err, user);
         } else {
-            User.findOne({ email: email }, function(err, user) {
+            PendingUser.findOne({ email: email }, function(err, user) {
                 if (user) {
-                    user.status = 'user';
+                    user.status = 'pending';
                 }
                 return callback(err, user);
             });
@@ -135,6 +154,19 @@ UserService.prototype.findPendingUserOrUserByEmail = function(email, callback) {
     })
 };
 
-module.exports = function() {
-    return new UserService();
+UserService.prototype.findPendingUserByCode = function(code, callback) {
+    PendingUser.findOne({ code: code }, function(err, pendingUser) {
+        // TODO handling error
+
+        if (!pendingUser) {
+            return callback({
+                message: 'There is pending user with that code.'
+            });
+        }
+        return callback(err, pendingUser);
+    })
+};
+
+module.exports = function(emailService) {
+    return new UserService(emailService);
 };

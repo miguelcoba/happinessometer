@@ -3,7 +3,7 @@
 var mongoose = require('mongoose'),
     moment = require('moment'),
     randomstring = require('randomstring'),
-    config = require('../../config/config'),    
+    config = require('../../config/config'),
     Schema = mongoose.Schema,
     pendingUserSchema;
 
@@ -31,12 +31,27 @@ pendingUserSchema = new Schema({
         type: String,
         unique: true,
         required: true,
+        index: true,
         default: randomstring.generate(35)
     },
     createdAt: {
         type: Date,
         default: moment().utc()
     },
+}, {
+    toJSON: {
+        transform: function(doc, ret) {
+            delete ret._id;
+            delete ret.__v;
+            delete ret.validUntil;
+            delete ret.createdAt;
+            return ret;
+        }
+    }
 });
+
+pendingUserSchema.methods.isValid = function(date) {
+    return true;
+};
 
 module.exports = mongoose.model('PendingUser', pendingUserSchema);

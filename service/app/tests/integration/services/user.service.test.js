@@ -8,7 +8,14 @@ var assert = require('assert'),
     config = require('../../../../config/config'),    
     User = require('../../../models/user'),
     Company = require('../../../models/company'),
-    userService = require('../../../services/user.service')(),
+    userService = require('../../../services/user.service')({
+        sendConfirmationMessage: function(user, continuation) {
+            continuation(null, {});
+        },
+        sendWelcomeMessage: function(user, continuation) {
+            continuation(null, {});
+        }
+    }),
     companyService = require('../../../services/company.service')(),
     PendingUser = require('../../../models/pendingUser');
 

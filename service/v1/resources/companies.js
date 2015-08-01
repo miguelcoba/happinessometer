@@ -10,8 +10,8 @@ module.exports = base.Resource.extend({
         var self = this;
         
         companyService.createNewCompany({
-            name: req.body.name,
-            domain: req.body.domain
+            name: self.request.body.name,
+            domain: self.request.body.domain
         }, function(err, company) {
             if (err) {
                 return self.dispatchInternalServerError(err);

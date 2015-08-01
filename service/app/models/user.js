@@ -33,7 +33,8 @@ userSchema = new Schema({
         type: String,
         lowercase: true,
         required: true,
-        unique : true
+        unique: true,
+        index: true
     },
     enabled: {
         type: Boolean,
@@ -44,6 +45,14 @@ userSchema = new Schema({
     createdAt: {
         type: Date,
         default: moment().utc()
+    }
+}, {
+    toJSON: {
+        transform: function(doc, ret) {
+            ret.id = doc._id;
+            delete ret._id;
+            return ret;
+        }
     }
 });
 
@@ -68,5 +77,21 @@ userSchema.methods.authenticate = function(password) {
     return this.password === this.hashPassword(password);
 };
 
+/*
+UserSchema.methods = {
+    hashPassword: function(continuation) {
+        var hash = crypto.createHash('sha1');
+        this.password = hash.update(this.password).digest('hex');
+        return continuation(null, this.password);
+    },
+
+    verifyPassword: function(password, continuation) {
+        var hash = crypto.createHash('sha1');
+        var digest = hash.update(password).digest('hex');
+        return continuation(null, this.password == digest);
+    }
+};
+*/
+
 // TODO roles by user
-module.exports = mongoose.model('User_', userSchema);
+module.exports = mongoose.model('User', userSchema);

@@ -8,13 +8,15 @@ var MoodService = function() {
 MoodService.prototype.setMood = function(moodConfig, callback) {
     if (!moodConfig || !moodConfig.mood || !moodConfig.comment) {
         return callback({
-            message: 'No mood config provided.'
+            message: 'No mood values provided.'
         });
     }
+
     var newMood = Mood({
         mood: moodConfig.mood,
         comment: moodConfig.comment
     });
+
     newMood.save(function(err, mood) {
         if (err) {
             return callback({

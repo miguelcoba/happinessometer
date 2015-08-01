@@ -9,6 +9,10 @@ module.exports = {
             validUntilDays: 3
         }
     },
+    email: {
+        from: 'hello@happinessometer.com',
+        name: 'Happinessometer Service'
+    },
     port: process.env.PORT || 3000,
     sessionName: 'connect.sid',
     log: {

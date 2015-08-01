@@ -1,22 +1,22 @@
 'use strict';
 
-var base = require('../lib/base');
-    moodService: require('../../app/services/mood.service')();
+var base = require('../lib/base'),
+    moodService = require('../../app/services/mood.service')();
 
 module.exports = base.Resource.extend({
     methods: ['post'],
 
-    post: function(req, res) {
+    post: function() {
         var self = this;
 
         moodService.setMood({
-            mood: req.body.mood,
-            comment: req.body.comment
+            mood: self.request.body.mood,
+            comment: self.request.body.comment
         }, function(err, newMood) {
             if (err) {
                 return self.dispatchInternalServerError(err);
             }
-            return res.json(newMood);
+            return self.response.json(newMood);
         });
     }
 });
