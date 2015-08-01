@@ -4,8 +4,6 @@ var base = require('../lib/base'),
     companyService = require('../../app/services/company.service')();
 
 module.exports = base.Resource.extend({
-    methods: ['post'],
-
     post: function(req, res) {
         var self = this;
         

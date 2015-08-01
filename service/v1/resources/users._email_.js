@@ -5,8 +5,6 @@ var base = require('../lib/base'),
     userService = require('../../app/services/user.service')(emailService);
 
 module.exports = base.Resource.extend({
-    methods: ['get'],
-
     get: function() {
         var self = this,
             json;

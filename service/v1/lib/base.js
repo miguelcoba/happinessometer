@@ -1,6 +1,8 @@
 'use strict';
-var _ = require('lodash');
-var extend = require('bextend');
+var _ = require('lodash'),
+    extend = require('bextend'),
+    config = require('../../config/config'),
+    jwt = require('jsonwebtoken');
 
 
 var errors = {
@@ -47,6 +49,7 @@ var Resource = function(request, response, continuation) {
 
 _.extend(Resource.prototype, {
 	methods: ['get', 'head', 'post', 'put', 'patch', 'delete', 'options', 'trace'],
+	needsToken: [],
 
 	dispatch: function() {
 		this.response.set('Content-Type', 'application/json; charset=utf-8');
@@ -60,11 +63,21 @@ _.extend(Resource.prototype, {
 		var method = this.request.method.toLowerCase();
 
 		if(this[method] && this[method].constructor === Function) {
-			this[method].apply(this, [
-				this.request,
-				this.response,
-				this.continuation
-			]);
+			if (this.needsToken.indexOf(method) >= 0) {
+				this.validateToken(function() {
+					that[method].apply(that, [
+						that.request,
+						that.response,
+						that.continuation
+					]);
+				});
+			} else {
+				this[method].apply(this, [
+					this.request,
+					this.response,
+					this.continuation
+				]);
+			}
 		}
 		else {
 			var implemented_methods = [];
@@ -75,6 +88,30 @@ _.extend(Resource.prototype, {
 			this.response.set('Allow', implemented_methods.join(', '));
 			this.dispatchError(new errors.NotAllowedError());
 		}
+	},
+
+	validateToken: function(next) {
+		var self = this;
+
+		// check header or url parameters or post parameters for token
+  		var token = self.request.body.token || self.request.query.token || self.request.headers['x-access-token'];
+  		// decode token
+  		if (token) {
+			// verifies secret and checks exp
+	    	jwt.verify(token, config.secretKey, function(err, decoded) {      
+		    	if (err) {
+		        	return self.dispatchUnauthorizedError('Failed to authenticate token.');    
+		      	} else {
+		        	// if everything is good, save to request for use in other routes
+		        	self.request.decoded = decoded;    
+		        	next();
+		      	}
+	    	});
+		} else {
+		    // if there is no token
+		    // return an error
+		    return self.dispatchBadRequestError('No token provided.');
+  		}
 	},
 
 	dispatchError: function(error) {
@@ -107,7 +144,11 @@ _.extend(Resource.prototype, {
 
 	dispatchConflictError: function(error) {
 		this.dispatchError(new errors.ConflictError(error));
-	}
+	},
+
+	dispatchUnauthorizedError: function(error) {
+		this.dispatchError(new errors.UnauthorizedError(error));
+	} 
 });
 
 

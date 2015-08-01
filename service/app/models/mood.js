@@ -24,8 +24,9 @@ module.exports = mongoose.model('Mood',  new Schema({
 }, {
     toJSON: {
         transform: function(doc, ret) {
-            ret.id = doc._id;
             delete ret._id;
+            delete ret.__v;
+            delete ret.id;
             return ret;
         }
     }

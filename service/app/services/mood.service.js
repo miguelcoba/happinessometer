@@ -28,6 +28,34 @@ MoodService.prototype.setMood = function(moodConfig, callback) {
     });
 };
 
+// TODO this needs pagination or something
+MoodService.prototype.findAll = function(callback) {
+    Mood.find({}, function(err, moods) {
+        if (err) {
+            return callback({
+                message: 'Error trying to get all moods',
+                cause: err
+            });
+        }
+
+        callback(null, moods);
+    });
+};
+
+MoodService.prototype.report = function(callback) {
+    this.findAll(function(err, moods) {
+        if (err) {
+            return callback({
+                message: err.message
+            });
+        }
+
+        callback(null, {
+            company: [0.5, 0.3, 0.2]
+        });
+    });
+}
+
 module.exports = function() {
     return new MoodService();
 };

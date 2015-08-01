@@ -7,8 +7,6 @@ var base = require('../lib/base'),
     userService = require('../../app/services/user.service')(emailService);
 
 module.exports = base.Resource.extend({
-    methods: ['post', 'get'],
-
     get: function() {
         var self = this;
 
@@ -75,7 +73,7 @@ module.exports = base.Resource.extend({
                 return self.dispatchError(err);
             }
 
-            return self.response.location('/users/' + newUser.email).status(201).send({ message: 'Ok' });
+            return self.response.location('/users/' + newUser.email).status(201).send(null);
         });
     }
 });
