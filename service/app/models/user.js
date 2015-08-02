@@ -51,6 +51,11 @@ userSchema = new Schema({
         transform: function(doc, ret) {
             ret.id = doc._id;
             delete ret._id;
+            delete ret.salt;
+            delete ret.__v;
+            delete ret.id;
+            delete ret.password;
+            delete ret.enabled;
             return ret;
         }
     }

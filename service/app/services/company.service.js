@@ -1,6 +1,7 @@
 'use strict';
 
 var Company = require('../models/company'),
+    User = require('../models/user'),
     validate = require('validate.js');
 
 var CompanyService = function() {
@@ -72,6 +73,19 @@ CompanyService.prototype.findWithDomain = function(domainName, callback) {
         return callback(err, company);
     });
 };
+
+CompanyService.prototype.findAllUsersInCompany = function(domainName, callback) {
+    User.find({ email: new RegExp(domainName + "$"), enabled: true }, function(err, users) {
+        if (err) {
+            return callback({
+                message: 'Error finding the users with domain ' + domainName + '.',
+                cause: err
+            });
+        }
+
+        return callback(err, users);
+    })
+}
 
 
 module.exports = function() {
