@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    //"start": "node ./bin/www",
     "start": ". ./devenv; forever -w ./bin/www",
     "dev": ". ./devenv; forever -w ./bin/www",
     "test": "mocha --require should --reporter dot --ui bdd app/tests/unit/**/*.test.js",
