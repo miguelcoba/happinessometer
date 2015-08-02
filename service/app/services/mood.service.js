@@ -50,20 +50,18 @@ MoodService.prototype.quantityReport = function(callback) {
             });
         }
 
-        callback(null, {
-            company: [{
-                mood: 'happy',
-                quantity: 1000
-            },{
-                mood: 'normal',
-                quantity: 500
-            },{
-                mood: 'sad',
-                quantity: 1340
-            }]
+        Mood.aggregate({
+            $group: {
+                _id: '$mood',
+                mood: { $first: '$mood' },
+                quantity: { $sum: 1 }
+            }
+        }).exec(function(error, result) {
+            if(error) return callback(error);
+            return callback(null, result);
         });
     });
-}
+};
 
 MoodService.prototype.hashtagReport = function(callback) {
     this.findAll(function(err, moods) {

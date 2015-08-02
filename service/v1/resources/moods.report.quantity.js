@@ -9,13 +9,9 @@ module.exports = base.Resource.extend({
     get: function() {
         var self = this;
 
-        console.log(self.request.decoded);
-
-        moodService.quantityReport(function(err, moods) {
-            if (err) {
-                return self.dispathError(err);
-            }
-            return self.response.json(moods);
+        moodService.quantityReport(function(error, aggregation) {
+            if (error) return self.dispatchError(error);
+            return self.response.json(aggregation);
         });
     }
 });
