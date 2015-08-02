@@ -7,8 +7,6 @@ module.exports = base.Resource.extend({
     needsToken: ['post', 'get'],
 
     post: function() {
-        console.log(this.request);
-        console.log(this.request.get("Authorization"));
         var self = this;
 
         moodService.setMood({

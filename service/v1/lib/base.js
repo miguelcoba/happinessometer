@@ -91,8 +91,6 @@ _.extend(Resource.prototype, {
 	},
 
 	validateToken: function(next) {
-		console.log(this.request);
-        console.log(this.request.get("Authorization"));
 		var self = this;
 
 		// check header or url parameters or post parameters for token
@@ -101,9 +99,9 @@ _.extend(Resource.prototype, {
 			self.request.query.token ||
 			self.request.headers['x-access-token'];
 
-		if(!token) {
+		if (!token) {
 			var authorization = this.request.get('Authorization');
-			if(authorization) {
+			if (authorization) {
 				authorization = authorization.split(' ');
 				var scheme = authorization[0];
 				if(scheme != 'Token') {

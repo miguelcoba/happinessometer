@@ -13,7 +13,7 @@ MoodService.prototype.setMood = function(moodConfig, callback) {
     }
 
     var newMood = Mood({
-        mood: moodConfig.mood,
+        mood: moodConfig.mood.toLowerCase(),
         comment: moodConfig.comment
     });
 
