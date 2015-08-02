@@ -7,7 +7,7 @@ module.exports = {
         }
     },
     db: {
-        uri: 'mongodb://localhost/happinessometer-dev',
+        uri: 'mongodb://heroku_3ljh15n9:nearsoft1234@ds043350.mongolab.com:43350/heroku_3ljh15n9',
         options: {
             user: '',
             pass: '',
