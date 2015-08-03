@@ -34,9 +34,9 @@ EmailService.prototype.sendConfirmationMessage = function(pendingUser, continuat
         html: '<strong>You are close!</strong>' +
               '<p>Please confirm your account at <a href="https://happinessometer-web.herokuapp.com/confirm?code=' +
               pendingUser.code +
-              '>Happinessometer</a>' +
+              '">Happinessometer</a></p>' +
               '<p>Or if you want copy & paste this link in your browser https://happinessometer-web.herokuapp.com/confirm?code=' +
-              pendingUser.code,
+              pendingUser.code + '</p>,
         text: 'SORRY, NOT IMPLEMENTED',
         subject: 'Account confirmation',
         to: [{
