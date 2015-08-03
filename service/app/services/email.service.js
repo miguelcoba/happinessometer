@@ -31,9 +31,12 @@ EmailService.prototype._sendMessage = function(message, continuation) {
 
 EmailService.prototype.sendConfirmationMessage = function(pendingUser, continuation) {
     var message = {
-        html: '<strong>Welcome to the Magic!</strong>',
+        html: '<strong>You are close!</strong>' +
+              '<p>Please confirm your account at <a href="https://happinessometer-web.herokuapp.com/confirm?code="' +
+              pendingUser.code +
+              '>Happinessometer</a>',
         text: 'SORRY, NOT IMPLEMENTED',
-        subject: 'Account confirmation: ' + pendingUser.code,
+        subject: 'Account confirmation',
         to: [{
             email: pendingUser.email,
             type: 'to'
