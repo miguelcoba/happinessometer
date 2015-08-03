@@ -31,8 +31,7 @@ pendingUserSchema = new Schema({
         type: String,
         unique: true,
         required: true,
-        index: true,
-        default: randomstring.generate(35)
+        index: true
     },
     createdAt: {
         type: Date,

@@ -5,7 +5,8 @@ var moment = require('moment'),
     PendingUser = require('../models/pendingUser'),
     Company = require('../models/company'),
     User = require('../models/user'),
-    emailService = require('../services/email.service');
+    emailService = require('../services/email.service'),
+    randomstring = require('randomstring');
 
 var UserService = function(emailService) {
     this._emailService = emailService;
@@ -51,6 +52,7 @@ UserService.prototype.requestNewUser = function(newUserConfig, callback) {
 
         newPendingUser = new PendingUser({
             email: newUserConfig.email,
+            code: randomstring.generate(35)
         });
 
         newPendingUser.save(function(err, pendingUser) {
