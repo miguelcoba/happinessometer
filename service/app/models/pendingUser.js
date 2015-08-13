@@ -2,7 +2,6 @@
 
 var mongoose = require('mongoose'),
     moment = require('moment'),
-    randomstring = require('randomstring'),
     config = require('../../config/config'),
     Schema = mongoose.Schema,
     pendingUserSchema;

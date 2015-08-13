@@ -7,7 +7,7 @@ var mongoose = require('mongoose'),
 module.exports = mongoose.model('Mood',  new Schema({
     mood: {
         type: String,
-        enum: ['happy', 'normal', 'sad'],
+        enum: ['love', 'joy', 'normal', 'sadness', 'fear', 'disgust', 'anger', 'surprise'],
         required: true
     },
     comment: {
