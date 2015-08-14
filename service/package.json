@@ -3,12 +3,13 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": ". ./devenv; ./bin/www",
+    "start": "./bin/www",
     "dev": ". ./devenv; forever -w ./bin/www",
     "test": "mocha --require should --reporter dot --ui bdd app/tests/unit/**/*.test.js",
     "test-integration": ". ./testenv; mocha --require should --reporter dot --ui bdd app/tests/integration/**/*.test.js"
   },
   "dependencies": {
+    "async": "^1.4.2",
     "bcrypt": "~0.8.3",
     "bextend": "0.0.1",
     "body-parser": "~1.12.4",
@@ -18,7 +19,7 @@
     "express": "4.12.4",
     "glob": "~4.0.5",
     "jsonwebtoken": "^5.0.4",
-    "lodash": "~3.9.3",
+    "lodash": "~3.10.1",
     "mandrill-api": "~1.0.45",
     "moment": "^2.10.3",
     "mongoose": "4.0.6",

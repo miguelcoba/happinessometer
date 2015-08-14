@@ -2,12 +2,13 @@
 
 var mongoose = require('mongoose'),
     moment = require('moment'),
+    moodEnum = require('./mood_enum'),
     Schema = mongoose.Schema;
 
 module.exports = mongoose.model('Mood',  new Schema({
     mood: {
         type: String,
-        enum: ['love', 'joy', 'normal', 'sadness', 'fear', 'disgust', 'anger', 'surprise'],
+        enum: moodEnum,
         required: true
     },
     comment: {
