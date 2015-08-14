@@ -30,7 +30,7 @@ MoodService.prototype.setMood = function(moodConfig, callback) {
 };
 
 // TODO this needs pagination or something
-MoodService.prototype.findAll = function(page, callback) {
+MoodService.prototype.findAllWithPage = function(page, callback) {
     var perPage = 30;
 
     Mood.find()
@@ -55,6 +55,21 @@ MoodService.prototype.findAll = function(page, callback) {
                 }
                 callback(null, moods, _.ceil(count / perPage), count);
             });
+        });
+};
+
+MoodService.prototype.findAll = function(callback) {
+    var perPage = 30;
+
+    Mood.find()
+        .exec(function (err1, moods) {
+            if (err1) {
+                return callback({
+                    message: 'Error trying to get all moods',
+                    cause: err1
+                });
+            }
+            callback(null, moods);
         });
 };
 
