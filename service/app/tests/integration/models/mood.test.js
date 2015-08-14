@@ -17,22 +17,24 @@ describe('Mood', function() {
                 console.error(chalk.red('Could not connect to MongoDB!'));
                 console.log(chalk.red(err));
             }
-        });
-
-        Mood.remove({}, function(err) {
             done();
         });
     });
 
-    after(function() {
+    after(function(done) {
         if (db) {
-            db.disconnect();
+            Mood.remove({}, function(err) {
+                db.disconnect();
+                done();
+            });
+        } else {
+            done();
         }
     });
 
     it('#save() should create a new Mood', function(done) {
         var mood = new Mood({
-            mood: 'happy',
+            mood: 'joy',
             comment: 'I dont have anything to add'
         });
 

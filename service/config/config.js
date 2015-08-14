@@ -17,7 +17,7 @@ var resolvingConfig = function() {
 
     conf = _.extend(
         require('./env/all'),
-        require('./env/' + process.env.NODE_ENV) || {}
+        {}
     );
 
     return _.merge(conf, (fs.existsSync('./config/env/local.js') && require('./env/local.js')) || {});

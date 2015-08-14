@@ -22,14 +22,22 @@ module.exports = base.Resource.extend({
 
     get: function() {
         var self = this;
+            page = self.request.params.page;
 
         console.log(self.request.decoded);
 
-        moodService.findAll(function(err, moods) {
+        moodService.findAll(page, function(err, moods, totalPages, moodsCount) {
             if (err) {
                 return self.dispathError(err);
             }
-            return self.response.json(moods);
+            return self.response.json({
+                moods: moods,
+                pagination: {
+                    page: page,
+                    totalPages: totalPages,
+                    totalItems: moodsCount
+                }
+            });
         });
     }
 });

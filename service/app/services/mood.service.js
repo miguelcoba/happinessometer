@@ -1,6 +1,7 @@
 'use strict';
 
-var Mood = require('../models/mood');
+var _ = require('lodash'),
+    Mood = require('../models/mood');
 
 var MoodService = function() {
 };
@@ -29,17 +30,32 @@ MoodService.prototype.setMood = function(moodConfig, callback) {
 };
 
 // TODO this needs pagination or something
-MoodService.prototype.findAll = function(callback) {
-    Mood.find({}, function(err, moods) {
-        if (err) {
-            return callback({
-                message: 'Error trying to get all moods',
-                cause: err
-            });
-        }
+MoodService.prototype.findAll = function(page, callback) {
+    var perPage = 30;
 
-        callback(null, moods);
-    });
+    Mood.find()
+        .limit(perPage)
+        .skip(perPage * (page - 1))
+        .sort({
+            createdAt: 'desc'
+        })
+        .exec(function (err1, moods) {
+            if (err1) {
+                return callback({
+                    message: 'Error trying to get all moods',
+                    cause: err1
+                });
+            }
+            Mood.count().exec(function(err2, count) {
+                if (err2) {
+                    return callback({
+                        message: 'Error counting all moods',
+                        cause: err2
+                    });
+                }
+                callback(null, moods, _.ceil(count / perPage), count);
+            });
+        });
 };
 
 MoodService.prototype.quantityReport = function(callback) {
