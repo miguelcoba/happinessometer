@@ -69,7 +69,7 @@ describe('MoodService', function() {
         });
 
         it('with page=1 should return the correct number of moods', function(done) {
-            moodService.findAll(1, function(err, moods, pageCount, itemCount) {
+            moodService.findAllWithPage(1, function(err, moods, pageCount, itemCount) {
                 should.not.exist(err);
                 moods.length.should.be.equal(30);
                 pageCount.should.be.equal(2);
@@ -79,7 +79,7 @@ describe('MoodService', function() {
         });
 
         it('with page=2 should return the correct number of moods', function(done) {
-            moodService.findAll(2, function(err, moods, pageCount, itemCount) {
+            moodService.findAllWithPage(2, function(err, moods, pageCount, itemCount) {
                 should.not.exist(err);
                 moods.length.should.be.equal(5);
                 pageCount.should.be.equal(2);

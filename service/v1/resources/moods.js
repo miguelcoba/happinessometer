@@ -21,12 +21,10 @@ module.exports = base.Resource.extend({
     },
 
     get: function() {
-        var self = this;
-            page = self.request.params.page;
+        var self = this,
+            page = parseInt(self.request.query.page);
 
-        console.log(self.request.decoded);
-
-        moodService.findAll(page, function(err, moods, totalPages, moodsCount) {
+        moodService.findAllWithPage(page ? page : 1, function(err, moods, totalPages, moodsCount) {
             if (err) {
                 return self.dispathError(err);
             }
