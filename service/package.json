@@ -3,11 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-<<<<<<< HEAD
-    "start": "node ./bin/www",
-=======
     "start": "./bin/www",
->>>>>>> e57b346... Changed the config to use env variables, moods gets is now using pagination
     "dev": ". ./devenv; forever -w ./bin/www",
     "test": "mocha --require should --reporter dot --ui bdd app/tests/unit/**/*.test.js",
     "test-integration": ". ./testenv; mocha --require should --reporter dot --ui bdd app/tests/integration/**/*.test.js"
