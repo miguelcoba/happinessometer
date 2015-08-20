@@ -1,5 +1,7 @@
 'use strict';
 
+var chalk = require('chalk');
+
 module.exports.logError = function (error) {
     if (error && error.message) {
         console.log(chalk.red("Error: " + error.message));
@@ -12,7 +14,7 @@ module.exports.error = function (settings) {
     if (errSettings.type) {
         err.type = errSettings.type;
     }
-    logError(err);
+    module.exports.logError(err);
     return err;
 }
 
@@ -26,15 +28,15 @@ module.exports.errorWithType = function (error, type) {
 }
 
 module.exports.handleMongoDBError = function (err, callback) {
-    return callback(errorWithType(err, 'App.MongoDB'));
+    return callback(module.exports.errorWithType(err, 'App.MongoDB'));
 }
 
 module.exports.handleEmailError = function (err, callback) {
-    return callback(errorWithType(err, 'App.Email'));
+    return callback(module.exports.errorWithType(err, 'App.Email'));
 }
 
 module.exports.handleAppValidationError = function (message, callback) {
-    return callback(error({
+    return callback(module.exports.error({
         message: message,
         type: 'App.Validation'
     }));
