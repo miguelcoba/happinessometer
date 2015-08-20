@@ -1,16 +1,15 @@
 'use strict';
 
 var _ = require('lodash'),
-    Mood = require('../models/mood');
+    Mood = require('../models/mood'),
+    errorsUtils = require('../utils/errors.utils');
 
 var MoodService = function() {
 };
 
 MoodService.prototype.setMood = function(moodConfig, callback) {
     if (!moodConfig || !moodConfig.mood || !moodConfig.comment) {
-        return callback({
-            message: 'No mood values provided.'
-        });
+        return errorsUtils.handleAppValidationError('No mood values provided.', callback);
     }
 
     var newMood = Mood({
@@ -20,10 +19,7 @@ MoodService.prototype.setMood = function(moodConfig, callback) {
 
     newMood.save(function(err, mood) {
         if (err) {
-            return callback({
-                message: 'Error saving mood',
-                cause: err
-            });
+            return errorsUtils.handleMongoDBError(err, callback);
         }
         callback(err, mood);
     });
@@ -41,17 +37,11 @@ MoodService.prototype.findAllWithPage = function(page, callback) {
         })
         .exec(function (err1, moods) {
             if (err1) {
-                return callback({
-                    message: 'Error trying to get all moods',
-                    cause: err1
-                });
+                return errorsUtils.handleMongoDBError(err1, callback);
             }
             Mood.count().exec(function(err2, count) {
                 if (err2) {
-                    return callback({
-                        message: 'Error counting all moods',
-                        cause: err2
-                    });
+                    return errorsUtils.handleMongoDBError(err2, callback);
                 }
                 callback(null, moods, _.ceil(count / perPage), count);
             });
@@ -64,21 +54,16 @@ MoodService.prototype.findAll = function(callback) {
     Mood.find()
         .exec(function (err1, moods) {
             if (err1) {
-                return callback({
-                    message: 'Error trying to get all moods',
-                    cause: err1
-                });
+                return errorsUtils.handleMongoDBError(err1, callback);
             }
             callback(null, moods);
         });
 };
 
 MoodService.prototype.quantityReport = function(callback) {
-    this.findAll(function(err, moods) {
-        if (err) {
-            return callback({
-                message: err.message
-            });
+    this.findAll(function(err1, moods) {
+        if (err1) {
+            return callback(err1);
         }
 
         Mood.aggregate({
@@ -87,8 +72,10 @@ MoodService.prototype.quantityReport = function(callback) {
                 mood: { $first: '$mood' },
                 quantity: { $sum: 1 }
             }
-        }).exec(function(error, result) {
-            if(error) return callback(error);
+        }).exec(function(err2, result) {
+            if (err2) {
+                return errorsUtils.handleMongoDBError(err2, callback);
+            }
             return callback(null, result);
         });
     });
@@ -96,11 +83,7 @@ MoodService.prototype.quantityReport = function(callback) {
 
 MoodService.prototype.hashtagReport = function(callback) {
     this.findAll(function(err, moods) {
-        if (err) {
-            return callback({
-                message: err.message
-            });
-        }
+        // TODO handle error
 
         callback(null, {
             hashtags: [{

@@ -1,6 +1,8 @@
 'use strict';
 
 var base = require('../lib/base'),
+    validate = require('validate.js'),
+    moodsEnum = require('../../app/models/mood_enum'),
     moodService = require('../../app/services/mood.service')();
 
 module.exports = base.Resource.extend({
@@ -9,13 +11,31 @@ module.exports = base.Resource.extend({
     post: function() {
         var self = this;
 
+        var errors = validate(self.request.body, {
+            mood: {
+                presence: true
+            },
+            comment: {
+                presence: true
+            }
+        });
+
+        if (errors) {
+            return self.dispatchValidationErrors("There are errors", errors);
+        } else if (moodsEnum.indexOf(self.request.body.mood) < 0) {
+            return self.dispatchValidationErrors("There are errors", {
+                mood: ["Mood value is not valid"]
+            });
+        }
+
         moodService.setMood({
             mood: self.request.body.mood,
             comment: self.request.body.comment
         }, function(err, newMood) {
             if (err) {
-                return self.dispatchInternalServerError(err);
+                return self.handleError(err);
             }
+
             return self.response.json(newMood);
         });
     },
@@ -26,8 +46,9 @@ module.exports = base.Resource.extend({
 
         moodService.findAllWithPage(page ? page : 1, function(err, moods, totalPages, moodsCount) {
             if (err) {
-                return self.dispathError(err);
+                return self.handleError(err);
             }
+
             return self.response.json({
                 moods: moods,
                 pagination: {

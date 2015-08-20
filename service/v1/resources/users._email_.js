@@ -11,8 +11,7 @@ module.exports = base.Resource.extend({
 
         userService.findPendingUserOrUserByEmail(self.request.params.email, function(err, user) {
             if (err) {
-                // TODO handle error
-                return self.dispatchInternalServerError(err);
+                return self.handleError(err);
             }
 
             if (!user) {

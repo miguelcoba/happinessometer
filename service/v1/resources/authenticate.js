@@ -26,6 +26,9 @@ module.exports = base.Resource.extend({
         }
 
         userService.findPendingUserOrUserByEmail(that.request.body.email, function(err, user) {
+            if (err) {
+                return self.handleError(err);
+            }
 
             if (!user) {
                 return that.dispatchNotFoundError('No user found with that email/password.');

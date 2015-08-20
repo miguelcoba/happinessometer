@@ -2,55 +2,16 @@
 
 var moment = require('moment'),
     chalk = require('chalk'),
+    randomstring = require('randomstring'),
     PendingUser = require('../models/pendingUser'),
     Company = require('../models/company'),
     User = require('../models/user'),
     emailService = require('../services/email.service'),
-    randomstring = require('randomstring');
+    errorsUtils = require('../utils/errors.utils');
 
 var UserService = function(emailService) {
     this._emailService = emailService;
 };
-
-function logError(error) {
-    if (error && error.message) {
-        console.log(chalk.red("Error: " + error.message));
-    }
-}
-
-function error(settings) {
-    var errSettings = settings || {},
-        err = new Error(errSettings.message);
-    if (errSettings.type) {
-        err.type = errSettings.type;
-    }
-    logError(err);
-    return err;
-}
-
-function errorWithType(error, type) {
-    if (error instanceof Error) {
-        error.type = type;
-        logError(error);
-        return error;
-    }
-    throw new Error('Error is not an error');
-}
-
-function handleMongoDBError(err, callback) {
-    return callback(errorWithType(err, 'App.MongoDB'));
-}
-
-function handleEmailError(err, callback) {
-    return callback(errorWithType(err, 'App.Email'));
-}
-
-function handleAppValidationError(message, callback) {
-    return callback(error({
-        message: message,
-        type: 'App.Validation'
-    }));
-}
 
 /**
  * Create a new request to create a user into the application
@@ -64,31 +25,31 @@ UserService.prototype.requestNewUser = function(newUserSettings, callback) {
         emailDomain;
 
     if (!newUserSettings) {
-        return handleAppValidationError('New user configuration not provided.', callback);
+        return errorsUtils.handleAppValidationError('New user configuration not provided.', callback);
     }
 
     if (newUserSettings && !newUserSettings.email) {
-        return handleAppValidationError('New user email is required.', callback);
+        return errorsUtils.handleAppValidationError('New user email is required.', callback);
     }
 
     emailDomain = newUserSettings.email.substring(newUserSettings.email.indexOf('@'));
     Company.findOne({ domain: emailDomain }, function(err, company) {
         if (err) {
-            return handleMongoDBError(err, callback);
+            return errorsUtils.handleMongoDBError(err, callback);
         }
 
         if (!company) {
-            return handleAppValidationError(
+            return errorsUtils.handleAppValidationError(
                 'There is no domain registered for ' + emailDomain + '.', callback);
         }
 
         PendingUser.findOne({ email: newUserSettings.email }, function(err, npu) {
             if (err) {
-                return handleMongoDBError(err, callback);
+                return errorsUtils.handleMongoDBError(err, callback);
             }
 
             if (npu) {
-                return handleAppValidationError(
+                return errorsUtils.handleAppValidationError(
                     'There is a pending user with ' + newUserSettings.email + ' email', callback);
             }
 
@@ -99,13 +60,13 @@ UserService.prototype.requestNewUser = function(newUserSettings, callback) {
 
             newPendingUser.save(function(err, pendingUser) {
                 if (err) {
-                    return handleMongoDBError(err, callback);
+                    return errorsUtils.handleMongoDBError(err, callback);
                 }
 
                 // TODO rgutierrez send email as a domain event
                 self._emailService.sendConfirmationMessage(pendingUser, function(err) {
                     if (err) {
-                        return handleEmailError('Error sending the confirmation email.', callback);
+                        return errorsUtils.handleEmailError('Error sending the confirmation email.', callback);
                     }
 
                     callback(err, pendingUser);
@@ -127,22 +88,15 @@ UserService.prototype.createUserUsingCode = function(code, userConfig, callback)
         user;
     PendingUser.findOne({ code: code }, function(err, pendingUser) {
         if (err) {
-            return callback({
-                message: 'Error trying to find the pending user with code ' + code,
-                cause: err
-            });
+            return errorsUtils.handleMongoDBError(err, callback);
         }
 
         if (!pendingUser) {
-            return callback({
-                message: 'There is no pending user with code ' + code
-            });
+            return errorsUtils.handleAppValidationError('There is no pending user with code.', callback);
         }
 
         if (moment().diff(pendingUser.validUntil, 'days') > 3) {
-            return callback({
-                message: 'There is no valid pending user with code ' + code
-            });
+            return errorsUtils.handleAppValidationError('There is no valid pending user with code.', callback);
         }
 
         user = new User({
@@ -158,18 +112,12 @@ UserService.prototype.createUserUsingCode = function(code, userConfig, callback)
 
         user.save(function(err, userSaved) {
             if (err) {
-                return callback({
-                    message: 'Error creating new user',
-                    cause: err
-                });
+                return errorsUtils.handleMongoDBError(err, callback);
             }
 
             self._emailService.sendWelcomeMessage(userSaved.email, function(err) {
                 if (err) {
-                    return callback({
-                        message: 'Error sending the welcome email.',
-                        cause: err
-                    })
+                    return errorsUtils.handleEmailError('Error sending welcome email.', callback);
                 }
                 callback(err, userSaved);
             });
@@ -179,13 +127,19 @@ UserService.prototype.createUserUsingCode = function(code, userConfig, callback)
 
 UserService.prototype.findPendingUserOrUserByEmail = function(email, callback) {
     User.findOne({ email: email }, function(err, user) {
-        // TODO handling error
+        if (err) {
+            return errorsUtils.handleMongoDBError(err, callback);
+        }
 
         if (user) {
             user.status = 'user';
             return callback(err, user);
         } else {
             PendingUser.findOne({ email: email }, function(err, user) {
+                if (err) {
+                    return errorsUtils.handleMongoDBError(err, callback);
+                }
+
                 if (user) {
                     user.status = 'pending';
                 }
@@ -197,13 +151,14 @@ UserService.prototype.findPendingUserOrUserByEmail = function(email, callback) {
 
 UserService.prototype.findPendingUserByCode = function(code, callback) {
     PendingUser.findOne({ code: code }, function(err, pendingUser) {
-        // TODO handling error
+        if (err) {
+            return errorsUtils.handleMongoDBError(err, callback);
+        }
 
         if (!pendingUser) {
-            return callback({
-                message: 'There is pending user with that code.'
-            });
+            return errorsUtils.handleAppValidationError('There is no pending user with that code.', callback);
         }
+
         return callback(err, pendingUser);
     })
 };

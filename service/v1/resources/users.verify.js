@@ -17,12 +17,12 @@ module.exports = base.Resource.extend({
         });
 
         if (errors) {
-            return that.dispatchValidationErrors("There are errors", errors);
+            return self.dispatchValidationErrors("There are errors", errors);
         }
 
         userService.findPendingUserByCode(self.request.query.code, function(err, user) {
             if (err) {
-                return self.dispatchError(err);
+                return self.handleError(err);
             }
 
             if (!user) {
@@ -30,9 +30,7 @@ module.exports = base.Resource.extend({
             }
 
             if (!user.isValid(moment())) {
-                return self.dispatchConflictError({
-                    message: 'Code is not valid.'
-                });
+                return self.dispatchBadRequestError('Code is not valid.');
             }
 
             return self.response.json(user.toJSON());
@@ -65,7 +63,7 @@ module.exports = base.Resource.extend({
         });
 
         if (errors) {
-            return self.dispatchBadRequestError(errors);
+            return self.dispatchValidationErrors("There are errors", errors);
         }
 
         userService.createUserUsingCode(self.request.body.code, self.request.body, function(err, newUser) {
