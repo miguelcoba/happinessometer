@@ -10,7 +10,7 @@ module.exports = base.Resource.extend({
     needsToken: ['get'],
 
     post: function() {
-        var self = this,
+        var that = this,
             json;
 
         var errors = validate(this.request.body, {
@@ -21,7 +21,7 @@ module.exports = base.Resource.extend({
         });
 
         if (errors) {
-            return self.dispatchBadRequestError(errors);
+            return that.dispatchValidationErrors("There are errors", errors);
         }
 
         var user = {
@@ -30,10 +30,10 @@ module.exports = base.Resource.extend({
 
         userService.requestNewUser(user, function(err, newUser) {
             if (err) {
-                return self.dispatchError(err);
+                return that.handleError(err);
             }
 
-            return self.response.location('/users/' + newUser.email).status(201).send(null);
+            return that.response.location('/users/' + newUser.email).status(201).send(null);
         });
     },
 
@@ -44,7 +44,7 @@ module.exports = base.Resource.extend({
 
         companyService.findAllUsersInCompany(domain, function(err, users) {
             if (err) {
-                return that.dispatchError(err);
+                return that.handleError(err);
             }
             return that.response.json(users);
         })

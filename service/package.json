@@ -6,7 +6,7 @@
     "start": "./bin/www",
     "dev": ". ./devenv; forever -w ./bin/www",
     "test": "mocha --require should --reporter dot --ui bdd app/tests/unit/**/*.test.js",
-    "test-integration": ". ./testenv; mocha --require should --reporter dot --ui bdd app/tests/integration/**/*.test.js"
+    "test-integration": ". ./testenv; mocha --require should --ui bdd app/tests/integration/**/*.test.js"
   },
   "dependencies": {
     "async": "^1.4.2",

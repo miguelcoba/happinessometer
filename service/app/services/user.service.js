@@ -12,65 +12,104 @@ var UserService = function(emailService) {
     this._emailService = emailService;
 };
 
+function logError(error) {
+    if (error && error.message) {
+        console.log(chalk.red("Error: " + error.message));
+    }
+}
+
+function error(settings) {
+    var errSettings = settings || {},
+        err = new Error(errSettings.message);
+    if (errSettings.type) {
+        err.type = errSettings.type;
+    }
+    logError(err);
+    return err;
+}
+
+function errorWithType(error, type) {
+    if (error instanceof Error) {
+        error.type = type;
+        logError(error);
+        return error;
+    }
+    throw new Error('Error is not an error');
+}
+
+function handleMongoDBError(err, callback) {
+    return callback(errorWithType(err, 'App.MongoDB'));
+}
+
+function handleEmailError(err, callback) {
+    return callback(errorWithType(err, 'App.Email'));
+}
+
+function handleAppValidationError(message, callback) {
+    return callback(error({
+        message: message,
+        type: 'App.Validation'
+    }));
+}
+
 /**
  * Create a new request to create a user into the application
  *
  * @param {newUser}
  * @param {callback}
  */
-UserService.prototype.requestNewUser = function(newUserConfig, callback) {
+UserService.prototype.requestNewUser = function(newUserSettings, callback) {
     var self = this,
         newPendingUser,
         emailDomain;
 
-    if (!newUserConfig) {
-        return callback({
-            message: 'New user configuration not provided.'
-        });
+    if (!newUserSettings) {
+        return handleAppValidationError('New user configuration not provided.', callback);
     }
 
-    if (newUserConfig && !newUserConfig.email) {
-        return callback({
-            message: 'New user email is required.'
-        });
+    if (newUserSettings && !newUserSettings.email) {
+        return handleAppValidationError('New user email is required.', callback);
     }
 
-    emailDomain = newUserConfig.email.substring(newUserConfig.email.indexOf('@'));
+    emailDomain = newUserSettings.email.substring(newUserSettings.email.indexOf('@'));
     Company.findOne({ domain: emailDomain }, function(err, company) {
         if (err) {
-            return callback({
-                message: 'Error trying to find the domain ' + emailDomain + '.',
-                cause: err
-            });
+            return handleMongoDBError(err, callback);
         }
 
         if (!company) {
-            return callback({
-                message: 'There is no domain registered for ' + emailDomain + '.'
-            });
+            return handleAppValidationError(
+                'There is no domain registered for ' + emailDomain + '.', callback);
         }
 
-        newPendingUser = new PendingUser({
-            email: newUserConfig.email,
-            code: randomstring.generate(35)
-        });
-
-        newPendingUser.save(function(err, pendingUser) {
+        PendingUser.findOne({ email: newUserSettings.email }, function(err, npu) {
             if (err) {
-                return callback({
-                    message: 'Error creating the new user request.',
-                    cause: err
-                });
+                return handleMongoDBError(err, callback);
             }
-            // TODO rgutierrez send email as a domain event
-            self._emailService.sendConfirmationMessage(pendingUser, function(err) {
+
+            if (npu) {
+                return handleAppValidationError(
+                    'There is a pending user with ' + newUserSettings.email + ' email', callback);
+            }
+
+            newPendingUser = new PendingUser({
+                email: newUserSettings.email,
+                code: randomstring.generate(35)
+            });
+
+            newPendingUser.save(function(err, pendingUser) {
                 if (err) {
-                    return callback({
-                        message: 'Error sending the confirmation email.',
-                        cause: err
-                    })
+                    return handleMongoDBError(err, callback);
                 }
-                callback(err, pendingUser);
+
+                // TODO rgutierrez send email as a domain event
+                self._emailService.sendConfirmationMessage(pendingUser, function(err) {
+                    if (err) {
+                        return handleEmailError('Error sending the confirmation email.', callback);
+                    }
+
+                    callback(err, pendingUser);
+                });
             });
         });
     });

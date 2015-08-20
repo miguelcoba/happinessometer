@@ -1,12 +1,14 @@
 'use strict';
 
 var assert = require('assert'),
+    async = require('async'),
     should = require('should'),
     mongoose = require('mongoose'),
     moment = require('moment'),
     chalk = require('chalk'),
     config = require('../../../../config/config'),
     User = require('../../../models/user'),
+    PendingUser = require('../../../models/pendingUser'),
     Company = require('../../../models/company'),
     userService = require('../../../services/user.service')({
         sendConfirmationMessage: function(user, continuation) {
@@ -16,8 +18,7 @@ var assert = require('assert'),
             continuation(null, {});
         }
     }),
-    companyService = require('../../../services/company.service')(),
-    PendingUser = require('../../../models/pendingUser');
+    companyService = require('../../../services/company.service')();
 
 describe('UserService', function() {
     var db,
@@ -35,26 +36,41 @@ describe('UserService', function() {
                 console.error(chalk.red('Could not connect to MongoDB!'));
                 console.log(chalk.red(err));
             }
-        });
-
-        User.remove({}, function(err) {
-            Company.remove({}, function(err) {
-                done();
-            });
+            done(err);
         });
     });
 
-    after(function() {
+    after(function(done) {
         if (db) {
-            db.disconnect();
+            async.parallel([
+                function(cb) {
+                    User.remove({}, cb);
+                },
+                function(cb) {
+                    PendingUser.remove({}, cb);
+                },
+                function(cb) {
+                    Company.remove({}, cb);
+                }
+            ], function() {
+                db.disconnect();
+                done();
+            });
+        } else {
+            done();
         }
     });
 
+    function assertAppValidationErrorWithMessage(message, err) {
+        err.message.should.be.equal(message);
+        err.type.should.be.equal('App.Validation');
+    }
+
     describe('#requestNewUser', function() {
-        it('without new user configuration should fail', function(done) {
+        it('without new user settings should fail', function(done) {
             userService.requestNewUser(null, function(err, newUser) {
                 should.exist(err);
-                err.message.should.be.equal('New user configuration not provided.');
+                assertAppValidationErrorWithMessage('New user configuration not provided.', err);
                 done();
             });
         });
@@ -62,7 +78,7 @@ describe('UserService', function() {
         it('without email should fail', function(done) {
             userService.requestNewUser({}, function(err, newUser) {
                 should.exist(err);
-                err.message.should.be.equal('New user email is required.');
+                assertAppValidationErrorWithMessage('New user email is required.', err);
                 done();
             });
         });
@@ -84,10 +100,15 @@ describe('UserService', function() {
             });
 
             afterEach(function(done) {
-                companyService.deleteWithDomain(nearsoftCompanyConfig.domain, function(err) {
-                    PendingUser.remove({}, function() {
-                        done();
-                    });
+                async.parallel([
+                    function(cb) {
+                        companyService.deleteWithDomain(nearsoftCompanyConfig.domain, cb);
+                    },
+                    function(cb) {
+                        PendingUser.remove({}, cb);
+                    }
+                ], function() {
+                    done();
                 });
             });
 
@@ -96,7 +117,6 @@ describe('UserService', function() {
                     should.not.exist(err);
                     pendingUser.email.should.be.equal(newUserBasicConfig.email);
                     pendingUser.code.should.be.valid;
-                    console.log(chalk.yellow("\nGenerated Code: " + pendingUser.code));
                     should(moment().diff(pendingUser.validUntil, 'seconds') <= 30).be.ok;
                     done();
                 });
@@ -118,9 +138,10 @@ describe('UserService', function() {
 
         describe("when there is pending user", function() {
             beforeEach(function(done) {
-                companyService.createNewCompany(nearsoftCompanyConfig, function() {
-                    userService.requestNewUser(newUserBasicConfig, function(err, pendingUser) {
-                        if (err) throw err;
+                companyService.createNewCompany(nearsoftCompanyConfig, function(err1) {
+                    if (err1) return done(err1);
+                    userService.requestNewUser(newUserBasicConfig, function(err2, pendingUser) {
+                        if (err2) return done(err2);
                         newUserBasicConfig.code = pendingUser.code;
                         done();
                     });
@@ -129,10 +150,18 @@ describe('UserService', function() {
 
             afterEach(function(done) {
                 var emailCondition = { email: newUserBasicConfig.email };
-                PendingUser.remove(emailCondition, function(err, raw) {
-                    User.remove(emailCondition, function(err) {
-                        done();
-                    });
+                async.parallel([
+                    function(cb) {
+                        PendingUser.remove(emailCondition, cb);
+                    },
+                    function(cb) {
+                        User.remove(emailCondition, cb);
+                    },
+                    function(cb) {
+                        companyService.deleteWithDomain(nearsoftCompanyConfig.domain, cb);
+                    }
+                ], function() {
+                    done();
                 });
             });
 

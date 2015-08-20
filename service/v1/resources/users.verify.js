@@ -17,7 +17,7 @@ module.exports = base.Resource.extend({
         });
 
         if (errors) {
-            return self.dispatchError(errors);
+            return that.dispatchValidationErrors("There are errors", errors);
         }
 
         userService.findPendingUserByCode(self.request.query.code, function(err, user) {

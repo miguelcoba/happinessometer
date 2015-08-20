@@ -1,6 +1,7 @@
 'use strict';
 
 var assert = require('assert'),
+    async = require('async'),
     should = require('should'),
     mongoose = require('mongoose'),
     chalk = require('chalk'),
@@ -17,16 +18,22 @@ describe('User', function() {
                 console.error(chalk.red('Could not connect to MongoDB!'));
                 console.log(chalk.red(err));
             }
-        });
-
-        User.remove({}, function(err) {
-            done();
+            done(err);
         });
     });
 
-    after(function() {
+    after(function(done) {
         if (db) {
-            db.disconnect();
+            async.parallel([
+                function(cb) {
+                    User.remove({}, cb);
+                }
+            ], function() {
+                db.disconnect();
+                done();
+            });
+        } else {
+            done();
         }
     });
 

@@ -1,6 +1,7 @@
 'use strict';
 
 var assert = require('assert'),
+    async = require('async'),
     should = require('should'),
     mongoose = require('mongoose'),
     chalk = require('chalk'),
@@ -17,13 +18,17 @@ describe('Mood', function() {
                 console.error(chalk.red('Could not connect to MongoDB!'));
                 console.log(chalk.red(err));
             }
-            done();
+            done(err);
         });
     });
 
     after(function(done) {
         if (db) {
-            Mood.remove({}, function(err) {
+            async.parallel([
+                function(cb) {
+                    Mood.remove({}, cb);
+                }
+            ], function() {
                 db.disconnect();
                 done();
             });
@@ -43,8 +48,6 @@ describe('Mood', function() {
             newMood.mood.should.be.equal(mood.mood);
             newMood.comment.should.be.equal(mood.comment);
             should.exist(newMood.createdAt);
-            console.log(chalk.green(newMood.createdAt));
-            console.log(chalk.blue(moment().utc()));
             done();
         });
     });

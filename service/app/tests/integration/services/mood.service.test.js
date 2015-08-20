@@ -19,7 +19,6 @@ describe('MoodService', function() {
             if (err) {
                 console.error(chalk.red('Could not connect to MongoDB!'));
                 console.error(chalk.red(err));
-                throw new Error();
             }
             done();
         });
@@ -27,7 +26,11 @@ describe('MoodService', function() {
 
     after(function(done) {
         if (db) {
-            Mood.remove({}, function(err) {
+            async.parallel([
+                function(cb) {
+                    Mood.remove({}, cb);
+                }
+            ], function() {
                 db.disconnect();
                 done();
             });

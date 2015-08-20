@@ -11,6 +11,12 @@ var errors = {
 		this.status = 400;
 	},
 
+	ValidationBadRequestError: function(message, fieldErrors) {
+		this.message = message;
+		this.errors = fieldErrors;
+		this.status = 400;
+	},
+
 	NotFoundError: function(message) {
 		this.message = message;
 		this.status = 404;
@@ -131,10 +137,17 @@ _.extend(Resource.prototype, {
 	},
 
 	dispatchError: function(error) {
-		this.response.status(error.status || 500).send(error.message ? {
-			message: error.message,
-			cause: error.cause && error.cause.message ? error.cause.message : ""
-		} : null);
+		var errorMessage = {};
+		if (error.message) {
+			errorMessage.message = error.message
+		}
+		if (error.type) {
+			errorMessage.type = error.type;
+		}
+		if (error.errors) {
+			errorMessage.errors = error.errors;
+		}
+		this.response.status(error.status || 500).send(errorMessage);
 	},
 
 	abort: function(error) {
@@ -142,11 +155,11 @@ _.extend(Resource.prototype, {
 	},
 
 	dispatchInternalServerError: function(error) {
-		this.dispatchError(new errors.InternalError(error));
+		this.dispatchError(new errors.InternalError(error.message));
 	},
 
 	dispatchNotFoundError: function(error) {
-		this.dispatchError(new errors.NotFoundError(error));
+		this.dispatchError(new errors.NotFoundError(error.message || error));
 	},
 
 	dispatchSuccessfulResourceCreation: function(resourceIdentifier) {
@@ -155,16 +168,29 @@ _.extend(Resource.prototype, {
 	},
 
 	dispatchBadRequestError: function(error) {
-		this.dispatchError(new errors.BadRequestError(error));
+		this.dispatchError(new errors.BadRequestError(error.message || error));
+	},
+
+	dispatchValidationErrors: function(message, fieldErrors) {
+		this.dispatchError(new errors.ValidationBadRequestError(message, fieldErrors));
 	},
 
 	dispatchConflictError: function(error) {
-		this.dispatchError(new errors.ConflictError(error));
+		this.dispatchError(new errors.ConflictError(error.message));
 	},
 
 	dispatchUnauthorizedError: function(error) {
-		this.dispatchError(new errors.UnauthorizedError(error));
-	} 
+		this.dispatchError(new errors.UnauthorizedError(error.message));
+	},
+
+	handleError: function(error) {
+		if (error.type) {
+			if (error.type === 'App.Validation') {
+				return this.dispatchBadRequestError(error);
+			}
+		}
+		return this.dispatchError(error);
+	}
 });
 
 
