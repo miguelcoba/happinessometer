@@ -13,7 +13,7 @@ module.exports = base.Resource.extend({
             }
 
             if (!company) {
-                return self.dispatchNotFoundError('No Company with domain ' + req.params.domain);
+                return self.dispatchNotFoundError('No Company with domain ' + self.request.params.domain);
             }
 
             return self.response.json(company.toJSON());
