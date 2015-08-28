@@ -130,7 +130,7 @@ describe('UserService', function() {
                 var code = 'unexistingCode';
                 userService.createUserUsingCode(code, null, function(err) {
                     should.exist(err);
-                    err.message.should.be.equal('There is no pending user with code ' + code);
+                    err.message.should.be.equal('There is no pending user with code.');
                     done();
                 });
             });
@@ -197,8 +197,7 @@ describe('UserService', function() {
                 it('should fail', function(done) {
                     userService.createUserUsingCode(newUserBasicConfig.code, {}, function(err) {
                         should.exist(err);
-                        err.message.should.be.equal('There is no valid pending user with code ' + 
-                            newUserBasicConfig.code);
+                        err.message.should.be.equal('There is no valid pending user with code.');
                         done();
                     });
                 });
