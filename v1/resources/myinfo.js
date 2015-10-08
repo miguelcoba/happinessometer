@@ -23,6 +23,7 @@ module.exports = base.Resource.extend({
             }
 
             return self.response.json({
+                username: user.username,
                 email: user.email,
                 firstName: user.name.first,
                 lastName: user.name.last,

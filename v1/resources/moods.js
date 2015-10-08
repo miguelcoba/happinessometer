@@ -11,7 +11,7 @@ module.exports = base.Resource.extend({
     post: function() {
         var self = this;
 
-        var errors = validate(self.request.body, {
+        var errors = validate(self.request.body, { 
             mood: {
                 presence: true
             },
@@ -28,7 +28,10 @@ module.exports = base.Resource.extend({
             });
         }
 
+        // TODO if user is present, validate the existence of that user within the company
+
         moodService.setMood({
+            user: self.request.body.user,
             mood: self.request.body.mood,
             comment: self.request.body.comment
         }, function(err, newMood) {

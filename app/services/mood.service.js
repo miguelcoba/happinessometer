@@ -8,14 +8,18 @@ var MoodService = function() {
 };
 
 MoodService.prototype.setMood = function(moodConfig, callback) {
-    if (!moodConfig || !moodConfig.mood || !moodConfig.comment) {
+    if (!moodConfig ||  !moodConfig.mood || !moodConfig.comment) {
         return errorsUtils.handleAppValidationError('No mood values provided.', callback);
     }
 
-    var newMood = Mood({
+    var newMoodSetting = {
         mood: moodConfig.mood.toLowerCase(),
         comment: moodConfig.comment
-    });
+    };
+    if (moodConfig.user) {
+        newMoodSetting.user = moodConfig.user
+    }
+    var newMood = Mood(newMoodSetting);
 
     newMood.save(function(err, mood) {
         if (err) {

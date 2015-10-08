@@ -34,7 +34,7 @@ pendingUserSchema = new Schema({
     },
     createdAt: {
         type: Date,
-        default: moment().utc()
+        default: Date.now
     },
 }, {
     toJSON: {

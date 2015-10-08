@@ -18,7 +18,7 @@ module.exports = mongoose.model('Company', new Schema({
     // TODO createdAt should be UTC
     createdAt: {
         type: Date,
-        default: moment().utc()
+        default: Date.now
     }
 }, {
     toJSON: {
