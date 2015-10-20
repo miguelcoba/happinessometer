@@ -6,8 +6,14 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
 module.exports = mongoose.model('Mood',  new Schema({
+    company: {
+        type: Schema.ObjectId,
+        ref: 'Company',
+        required: true
+    },
     user: {
-        type: String,
+        type: Schema.ObjectId,
+        ref: 'User',
         required: false,
     },
     mood: {
@@ -20,7 +26,6 @@ module.exports = mongoose.model('Mood',  new Schema({
         maxlength: 140,
         required: true
     },
-    // TODO createdAt should be UTC
     createdAt: {
         type: Date,
         default: Date.now
