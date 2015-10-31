@@ -11,7 +11,7 @@ module.exports = base.Resource.extend({
     post: function() {
         var self = this;
 
-	console.log('Request: ', self.request.body);
+        console.log('Request: ', self.request.body);
 
         var errors = validate(self.request.body, { 
             token: {
@@ -34,9 +34,9 @@ module.exports = base.Resource.extend({
             return self.response.send("Sorry, I don't know that feeling");
         }
 
-	if (self.request.body.token !== 't96I6qnMO5hTXkEBzR7Gxi9I') {
+        if (self.request.body.token !== 't96I6qnMO5hTXkEBzR7Gxi9I') {
             return self.dispatchValidationErrors("Invalid slack token");
-	}
+        }
 
         // TODO if user is present, validate the existence of that user within the company
 
